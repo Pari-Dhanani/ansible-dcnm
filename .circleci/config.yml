@@ -75,11 +75,7 @@ jobs:
           command: pip install https://github.com/ansible/ansible/archive/v<< parameters.ansible_version >>.tar.gz --disable-pip-version-check
       
       - run:
-          name: print path
-          command: ls -lrt /home/circleci/.cache/collection-tarballs/ 
-      
-      - run:
-          command: curl -H "Circle-Token cf55185a5334438422f9e9157a1b435efdc8faae " https://circleci.com/api/v1.1/project/github/Pari-Dhanani/ansible-dcnm/latest/artifacts
+          command: curl -H "Circle-Token:cf55185a5334438422f9e9157a1b435efdc8faae" https://circleci.com/api/v1.1/project/github/Pari-Dhanani/ansible-dcnm/latest/artifacts
           name: Download migrated collection artifacts
           
       - run:
