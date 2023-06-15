@@ -37,11 +37,15 @@ jobs:
 
       - store_artifacts:
           path: ~/.cache/collection-tarballs
-          destination: collection   
+          destination: collection
 
       - run:
           name: print artifact path
-          command: echo ~/.cache/collection-tarballs          
+          command: echo ~/.cache/collection-tarballs    
+
+      - run:
+          name: print path
+          command: ls -lrt /home/circleci/.cache/collection-tarballs/cisco-dcnm-3.3.0.tar.gz 
 
   sanity:
     parameters:
@@ -69,11 +73,15 @@ jobs:
       - run:
           name: Install ansible-base (v<< parameters.ansible_version >>
           command: pip install https://github.com/ansible/ansible/archive/v<< parameters.ansible_version >>.tar.gz --disable-pip-version-check
-
+      
       - run:
+          name: print path
+          command: ls -lrt /home/circleci/.cache/collection-tarballs/ 
+      
+      - run:
+          command: curl -H "Circle-Token cf55185a5334438422f9e9157a1b435efdc8faae " https://circleci.com/api/v1.1/project/github/Pari-Dhanani/ansible-dcnm/latest/artifacts
           name: Download migrated collection artifacts
-          command: https://output.circle-artifacts.com/output/job/8bd42882-4c5f-49c5-a47a-0b94b1c19a63/artifacts/0/collection/cisco-dcnm-3.3.0.tar.gz 
-
+          
       - run:
           name: Install the collection tarball
           command: ansible-galaxy collection install .cache/collection-tarballs/*.tar.gz
