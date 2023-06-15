@@ -25,7 +25,7 @@ jobs:
       
       - run:
           name: Install ansible-base (v<< parameters.ansible_version >>
-          command: pip install https://github.com/ansible/ansible/archive/v<< parameters.ansible_version >> .tar.gz --disable-pip-version-check
+          command: pip install https://github.com/ansible/ansible/archive/v<< parameters.ansible_version >>.tar.gz --disable-pip-version-check
 
       - run:
           name: Build a DCNM collection tarball
