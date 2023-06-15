@@ -64,7 +64,7 @@ jobs:
 
       - run:
           name: Download migrated collection artifacts
-          command: curl -H "Circle-Token cf55185a5334438422f9e9157a1b435efdc8faae" https://circleci.com/api/v1.1/project/github/Pari-Dhanani/ansible-dcnm/latest/artifacts
+          command: https://output.circle-artifacts.com/output/job/8bd42882-4c5f-49c5-a47a-0b94b1c19a63/artifacts/0/collection/cisco-dcnm-3.3.0.tar.gz 
 
       - run:
           name: Install the collection tarball
