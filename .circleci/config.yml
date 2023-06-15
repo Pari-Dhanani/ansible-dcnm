@@ -2,10 +2,14 @@ version: 2.1
 
 jobs:
   build:
+    parameters:
+      ansible_version:
+        type: string
+
     working_directory: ~/repo
 
     docker:
-      - image: cimg/base:stable
+      - image: circleci/python:3.9
 
     steps:
       - checkout
@@ -18,10 +22,10 @@ jobs:
           command: |
             sudo apt-get update
             sudo apt-get install -y python3.9
-
+      
       - run:
-          name: Install ansible-base (v${{ matrix.ansible }})
-          command: pip install https://github.com/ansible/ansible/archive/v${{ matrix.ansible }}.tar.gz --disable-pip-version-check
+          name: Install ansible-base (v<< parameters.ansible_version >>
+          command: pip install https://github.com/ansible/ansible/archive/v<< parameters.ansible_version >> .tar.gz --disable-pip-version-check
 
       - run:
           name: Build a DCNM collection tarball
@@ -32,9 +36,15 @@ jobs:
           destination: collection
 
   sanity:
+    parameters:
+      ansible_version:
+        type: string
+      py_version:
+        type: string
+
     working_directory: ~/repo
     docker:
-      - image: cimg/base:stable
+      - image: circleci/python:3.9
 
     steps:
       - checkout
@@ -49,8 +59,8 @@ jobs:
             sudo apt-get install -y python3.9
 
       - run:
-          name: Install ansible-base (v${{ matrix.ansible }})
-          command: pip install https://github.com/ansible/ansible/archive/v${{ matrix.ansible }}.tar.gz --disable-pip-version-check
+          name: Install ansible-base (v<< parameters.ansible_version >>
+          command: pip install https://github.com/ansible/ansible/archive/v<< parameters.ansible_version >>.tar.gz --disable-pip-version-check
 
       - run:
           name: Download migrated collection artifacts
@@ -62,14 +72,19 @@ jobs:
 
       - run:
           name: Run sanity tests
-          command: ansible-test sanity --docker --python ${{matrix.python}} -v --color --truncate 0
+          command: ansible-test sanity --docker --python << parameters.py_version >> -v --color --truncate 0
           environment:
             PYTHONPATH: /home/circleci/.ansible/collections/ansible_collections/cisco/dcnm
 
   unit-tests:
+    parameters:
+      ansible_version:
+        type: string
+
+
     working_directory: ~/repo
     docker:
-      - image: cimg/base:stable
+      - image: circleci/python:3.9
 
     steps:
       - checkout
@@ -84,8 +99,8 @@ jobs:
             sudo apt-get install -y python3.9
 
       - run:
-          name: Install ansible-base (v${{ matrix.ansible }})
-          command: pip install https://github.com/ansible/ansible/archive/v${{ matrix.ansible }}.tar.gz --disable-pip-version-check
+          name: Install ansible-base (v<< parameters.ansible_version >>)
+          command: pip install https://github.com/ansible/ansible/archive/v<< parameters.ansible_version >>.tar.gz --disable-pip-version-check
 
       - run:
           name: Install coverage (v4.5.4)
@@ -107,3 +122,48 @@ jobs:
           name: Run DCNM Unit tests
           command: |
             coverage run --source=. -m pytest tests/unit/modules/dcnm/.
+
+workflows:
+  build-test-and-deploy:
+    jobs:
+      - build:
+          matrix:
+            parameters:
+              ansible_version:
+              - 2.9.26
+              - 2.10.17
+              - 2.11.12
+              - 2.12.10
+              - 2.13.8
+              - 2.14.2
+                
+      - sanity:
+          requires:
+            - build
+          matrix:
+            parameters:
+              py_version:
+                - "3.8"
+                - "3.9"
+              ansible_version:
+                - 2.9.26
+                - 2.10.17
+                - 2.11.12
+                - 2.12.10
+                - 2.13.8
+                - 2.14.2
+                
+      - unit-tests:
+          requires:
+            - build
+          matrix:
+            parameters:
+              ansible_version:
+                - 2.9.26
+                - 2.10.17
+                - 2.11.12
+                - 2.12.10
+                - 2.13.8
+                - 2.14.2
+                
+
