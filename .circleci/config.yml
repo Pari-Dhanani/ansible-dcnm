@@ -64,7 +64,7 @@ jobs:
 
       - run:
           name: Download migrated collection artifacts
-          command: circleci step download_artifacts -n collection
+          command: curl -H "Circle-Token cf55185a5334438422f9e9157a1b435efdc8faae" https://circleci.com/api/v1.1/project/github/Pari-Dhanani/ansible-dcnm/latest/artifacts
 
       - run:
           name: Install the collection tarball
@@ -112,7 +112,7 @@ jobs:
 
       - run:
           name: Download migrated collection artifacts
-          command: circleci step download_artifacts -n collection
+          command: curl -H "Circle-Token cf55185a5334438422f9e9157a1b435efdc8faae" https://circleci.com/api/v1.1/project/github/Pari-Dhanani/ansible-dcnm/latest/artifacts
 
       - run:
           name: Install the collection tarball
