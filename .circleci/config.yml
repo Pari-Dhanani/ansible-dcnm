@@ -31,9 +31,17 @@ jobs:
           name: Build a DCNM collection tarball
           command: ansible-galaxy collection build --output-path "${HOME}/.cache/collection-tarballs"
 
+      - run:
+          name: print home directory
+          command: echo ${HOME}
+
       - store_artifacts:
           path: ~/.cache/collection-tarballs
-          destination: collection
+          destination: collection   
+
+      - run:
+          name: print artifact path
+          command: echo ~/.cache/collection-tarballs          
 
   sanity:
     parameters:
