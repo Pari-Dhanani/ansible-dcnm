@@ -112,12 +112,13 @@ jobs:
 
       - run:
           name: Run DCNM Unit tests
+          environment:
+            PYTHONPATH: /home/runner/.ansible/collections
           command: |
             pwd
             cd ..
             cd .ansible/collections/ansible_collections/cisco/dcnm/ 
             pwd
-            env
             coverage run --source=. -m pytest tests/unit/modules/dcnm/.
 
 workflows:
