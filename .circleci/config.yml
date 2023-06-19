@@ -60,6 +60,10 @@ jobs:
           command: ansible-galaxy collection install cisco.dcnm
 
       - run:
+          name: change directory
+          command: cd /home/circleci/.ansible/collections/ansible_collections/cisco/dcnm          
+
+      - run:
           name: Run sanity tests
           command: ansible-test sanity --docker --python << parameters.py_version >> -v --color --truncate 0
           environment:
@@ -102,7 +106,9 @@ jobs:
       - run:
           name: Install the collection tarball
           command: ansible-galaxy collection install cisco.dcnm
-
+      - run:
+          name: change directory
+          command: cd /home/circleci/.ansible/collections/ansible_collections/cisco/dcnm
       - run:
           name: Run DCNM Unit tests
           command: |
