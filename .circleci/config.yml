@@ -115,7 +115,7 @@ jobs:
           command: |
             pwd
             cd ..
-            cd .ansible/collections/
+            cd .ansible/ansible_collections/cisco/dcnm/ 
             pwd
             env
             coverage run --source=. -m pytest tests/unit/modules/dcnm/.
