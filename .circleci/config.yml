@@ -35,7 +35,7 @@ jobs:
       py_version:
         type: string
 
-    working_directory: home/circleci/.ansible/collections
+    working_directory: ~/repo
     docker:
       - image: circleci/python:3.9
 
@@ -63,7 +63,7 @@ jobs:
           name: Run sanity tests
           command: ansible-test sanity --docker --python << parameters.py_version >> -v --color --truncate 0
           environment:
-            PYTHONPATH: /home/circleci/.ansible/collections/ansible_collections/cisco/dcnm
+            PYTHONPATH: /home/circleci/.ansible/collections
 
   unit-tests:
     parameters:
@@ -71,7 +71,7 @@ jobs:
         type: string
 
 
-    working_directory: home/circleci/.ansible/collections
+    working_directory: ~/repo
     docker:
       - image: circleci/python:3.9
 
