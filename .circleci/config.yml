@@ -16,16 +16,10 @@ jobs:
 
       - setup_remote_docker:
           version: 20.10.7
-
-      - run:
-          name: Set up Python 3.9
-          command: |
-            sudo apt-get update
-            sudo apt-get install -y python3.9
       
       - run:
-          name: Install ansible-base (v<< parameters.ansible_version >>
-          command: pip install https://github.com/ansible/ansible/archive/v<< parameters.ansible_version >>.tar.gz --disable-pip-version-check
+          name: Installed (v<< parameters.ansible_version >>)
+          command: echo install https://github.com/ansible/ansible/archive/v<< parameters.ansible_version >>.tar.gz --disable-pip-version-check
 
 
   sanity:
@@ -61,7 +55,9 @@ jobs:
 
       - run:
           name: change directory
-          command: cd /home/circleci/.ansible/collections/ansible_collections/cisco/dcnm          
+          command: |
+            cd ..
+            cd .ansible/collections/ansible_collections/cisco/dcnm/        
 
       - run:
           name: Run sanity tests
@@ -108,7 +104,10 @@ jobs:
           command: ansible-galaxy collection install cisco.dcnm
       - run:
           name: change directory
-          command: cd /home/circleci/.ansible/collections/ansible_collections/cisco/dcnm
+          command: |
+            cd ..
+            cd .ansible/collections/ansible_collections/cisco/dcnm/
+
       - run:
           name: Run DCNM Unit tests
           command: |
