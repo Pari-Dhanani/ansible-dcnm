@@ -27,25 +27,6 @@ jobs:
           name: Install ansible-base (v<< parameters.ansible_version >>
           command: pip install https://github.com/ansible/ansible/archive/v<< parameters.ansible_version >>.tar.gz --disable-pip-version-check
 
-      - run:
-          name: Build a DCNM collection tarball
-          command: ansible-galaxy collection build --output-path "${HOME}/.cache/collection-tarballs"
-
-      - run:
-          name: print home directory
-          command: echo ${HOME}
-
-      - store_artifacts:
-          path: ~/.cache/collection-tarballs
-          destination: collection
-
-      - run:
-          name: print artifact path
-          command: echo ~/.cache/collection-tarballs    
-
-      - run:
-          name: print path
-          command: ls -lrt /home/circleci/.cache/collection-tarballs/cisco-dcnm-3.3.0.tar.gz 
 
   sanity:
     parameters:
@@ -73,14 +54,10 @@ jobs:
       - run:
           name: Install ansible-base (v<< parameters.ansible_version >>
           command: pip install https://github.com/ansible/ansible/archive/v<< parameters.ansible_version >>.tar.gz --disable-pip-version-check
-      
-      - run:
-          command: curl -H "Circle-Token:cf55185a5334438422f9e9157a1b435efdc8faae" https://circleci.com/api/v1.1/project/github/Pari-Dhanani/ansible-dcnm/latest/artifacts
-          name: Download migrated collection artifacts
           
       - run:
           name: Install the collection tarball
-          command: ansible-galaxy collection install collection/*.tar.gz
+          command: ansible-galaxy collection install cisco.dcnm
 
       - run:
           name: Run sanity tests
@@ -121,14 +98,10 @@ jobs:
       - run:
           name: Install pytest (v5.4.1)
           command: pip install pytest==5.4.1
-
-      - run:
-          name: Download migrated collection artifacts
-          command: curl -H "Circle-Token cf55185a5334438422f9e9157a1b435efdc8faae" https://circleci.com/api/v1.1/project/github/Pari-Dhanani/ansible-dcnm/latest/artifacts
-
+          
       - run:
           name: Install the collection tarball
-          command: ansible-galaxy collection install .cache/collection-tarballs/*.tar.gz
+          command: ansible-galaxy collection install cisco.dcnm
 
       - run:
           name: Run DCNM Unit tests
