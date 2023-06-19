@@ -109,7 +109,7 @@ jobs:
           command: |
             pwd
             cd ..
-            cd .ansible/collections/ansible_collections/cisco/dcnm/
+            cd .ansible/collections/
             pwd
 
       - run:
