@@ -56,8 +56,10 @@ jobs:
       - run:
           name: change directory
           command: |
+            pwd
             cd ..
-            cd .ansible/collections/ansible_collections/cisco/dcnm/        
+            cd .ansible/collections/ansible_collections/cisco/dcnm/ 
+            pwd       
 
       - run:
           name: Run sanity tests
@@ -105,8 +107,10 @@ jobs:
       - run:
           name: change directory
           command: |
+            pwd
             cd ..
             cd .ansible/collections/ansible_collections/cisco/dcnm/
+            pwd
 
       - run:
           name: Run DCNM Unit tests
