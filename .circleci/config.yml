@@ -83,7 +83,10 @@ jobs:
 
       - run:
           name: "Say hello"
-          command: "echo Hello, Build!"
+          command: |
+            "echo Hello, Build!"
+            "echo $BASE_REVISION"
+          
 
 
   all-unit_job:
