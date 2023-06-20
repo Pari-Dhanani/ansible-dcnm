@@ -83,7 +83,7 @@ jobs:
 
       - run:
           name: "Say hello"
-          command: "echo $BASE_REVISION"
+          command: "env"
           
 
 
