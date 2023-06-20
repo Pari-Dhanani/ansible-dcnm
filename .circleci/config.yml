@@ -60,6 +60,9 @@ parameters:
   run-all-unit:
     type: boolean
     default: false
+  run-all:
+    type: boolean
+    default: false
 
 jobs:
   build:
