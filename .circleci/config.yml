@@ -1,5 +1,66 @@
 version: 2.1
 
+setup: << pipeline.parameters.run-setup >>
+
+orbs:
+  path-filtering: circleci/path-filtering@0.0.2
+
+
+executors:
+  base:
+    docker:
+      - image: circleci/python:3.9
+
+
+parameters:
+  run-setup:
+    type: boolean
+    default: true
+
+#   run-module-a:
+#     type: boolean
+#     default: false
+
+  run-inventory:
+    type: boolean
+    default: false
+  run-interface:
+    type: boolean
+    default: false
+  run-links:
+    type: boolean
+    default: false
+  run-network:
+    type: boolean
+    default: false
+  run-policy:
+    type: boolean
+    default: false
+  run-resource_manager:
+    type: boolean
+    default: false
+  run-rest:
+    type: boolean
+    default: false
+  run-service_node:
+    type: boolean
+    default: false
+  run-service_policy:
+    type: boolean
+    default: false
+  run-service_route_peering:
+    type: boolean
+    default: false
+  run-template:
+    type: boolean
+    default: false
+  run-vrf:
+    type: boolean
+    default: false
+  run-all-unit:
+    type: boolean
+    default: false
+
 jobs:
   build:
     parameters:
@@ -16,142 +77,298 @@ jobs:
 
       - setup_remote_docker:
           version: 20.10.7
-      
+
       - run:
-          name: Installed (v<< parameters.ansible_version >>)
-          command: echo install https://github.com/ansible/ansible/archive/v<< parameters.ansible_version >>.tar.gz --disable-pip-version-check
+          name: "Say hello"
+          command: "echo Hello, Build!"
 
 
-  sanity:
-    parameters:
-      ansible_version:
-        type: string
-      py_version:
-        type: string
-
+  all-unit_job:
     working_directory: ~/repo
-    docker:
-      - image: circleci/python:3.9
-
+    executor: base
     steps:
-      - checkout
-
-      - setup_remote_docker:
-          version: 20.10.7
-
       - run:
-          name: Set up Python 3.9
+          name: Run all Unit tests
           command: |
-            sudo apt-get update
-            sudo apt-get install -y python3.9
+            echo Hello, Unit!
 
-      - run:
-          name: Install ansible-base (v<< parameters.ansible_version >>
-          command: pip install https://github.com/ansible/ansible/archive/v<< parameters.ansible_version >>.tar.gz --disable-pip-version-check
-          
-      - run:
-          name: Install the collection tarball
-          command: ansible-galaxy collection install cisco.dcnm
-    
-
-      - run:
-          name: Run sanity tests
-          command: |
-            pwd
-            cd ..
-            cd .ansible/collections/ansible_collections/cisco/dcnm/ 
-            pwd
-            ansible-test sanity --docker --python << parameters.py_version >> -v --color --truncate 0
-          environment:
-            PYTHONPATH: /home/circleci/.ansible/collections
-
-  unit-tests:
-    parameters:
-      ansible_version:
-        type: string
-
-
+  inventory_job:
     working_directory: ~/repo
-    docker:
-      - image: circleci/python:3.9
-
+    executor: base
     steps:
-      - checkout
-
-      - setup_remote_docker:
-          version: 20.10.7
-
       - run:
-          name: Set up Python 3.9
+          name: Run inventory Unit tests
           command: |
-            sudo apt-get update
-            sudo apt-get install -y python3.9
+            echo Hello, inventory!
 
+  interface_job:
+    working_directory: ~/repo
+    executor: base
+    steps:
       - run:
-          name: Install ansible-base (v<< parameters.ansible_version >>)
-          command: pip install https://github.com/ansible/ansible/archive/v<< parameters.ansible_version >>.tar.gz --disable-pip-version-check
-
-      - run:
-          name: Install coverage (v4.5.4)
-          command: pip install coverage==4.5.4
-
-      - run:
-          name: Install pytest (v5.4.1)
-          command: pip install pytest==5.4.1
-          
-      - run:
-          name: Install the collection tarball
-          command: ansible-galaxy collection install cisco.dcnm
-      - run:
-          name: change directory
+          name: Run interface Unit tests
           command: |
-            pwd
-            cd ..
-            cd .ansible/collections/ansible_collections/cisco/dcnm/
-            pwd
+            echo Hello!
 
+  links_job:
+    working_directory: ~/repo
+    executor: base
+    steps:
       - run:
-          name: Run DCNM Unit tests
-          environment:
-            PYTHONPATH: /home/runner/.ansible/collections
+          name: Run links Unit tests
           command: |
-            pwd
-            cd ..
-            cd .ansible/collections/ansible_collections/cisco/dcnm/ 
-            pwd
-            coverage run --source=. -m pytest tests/unit/modules/dcnm/.
+            echo Hello!
+
+  network_job:
+    working_directory: ~/repo
+    executor: base
+    steps:
+      - run:
+          name: Run network Unit tests
+          command: |
+            echo Hello!
+
+  policy_job:
+    working_directory: ~/repo
+    executor: base
+    steps:
+      - run:
+          name: Run policy Unit tests
+          command: |
+            echo Hello!
+
+  resource_manager_job:
+    working_directory: ~/repo
+    executor: base
+    steps:
+      - run:
+          name: Run resource manager Unit tests
+          command: |
+            echo Hello!
+
+  rest_job:
+    working_directory: ~/repo
+    executor: base
+    steps:
+      - run:
+          name: Run rest Unit tests
+          command: |
+            echo Hello!
+
+  service_node_job:
+    working_directory: ~/repo
+    executor: base
+    steps:
+      - run:
+          name: Run service node Unit tests
+          command: |
+            echo Hello!
+
+  service_policy_job:
+    working_directory: ~/repo
+    executor: base
+    steps:
+      - run:
+          name: Run Service Policy Unit tests
+          command: |
+            echo Hello!
+
+  service_route_peering_job:
+    working_directory: ~/repo
+    executor: base
+    steps:
+      - run:
+          name: Run Service Route Peering Unit tests
+          command: |
+            echo Hello!
+
+  template_job:
+    working_directory: ~/repo
+    executor: base
+    steps:
+      - run:
+          name: Run Template Unit tests
+          command: |
+            echo Hello!
+
+  vrf_job:
+    working_directory: ~/repo
+    executor: base
+    steps:
+      - run:
+          name: Run VRF Unit tests
+          command: |
+            echo Hello!
+
+
 
 workflows:
-  build-test-and-deploy:
+  pre:
+    when: << pipeline.parameters.run-setup >>
     jobs:
+
       - build:
           matrix:
             parameters:
               ansible_version:
+              - 2.9.26
+              - 2.10.17
+              - 2.11.12
               - 2.12.10
               - 2.13.8
+              - 2.14.2
 
-                
-      - sanity:
+      - path-filtering/filter:
           requires:
             - build
-          matrix:
-            parameters:
-              py_version:
-                - "3.8"
-                - "3.9"
-              ansible_version:
-                - 2.12.10
-                - 2.13.8
+          # Compare files on main
+          base-revision: main
+          # Config for continuation; herein we reuse this config itself
+          config-path: .circleci/config.yml
+          # 3-column space-separated table for mapping; `path-to-test parameter-to-set value-for-parameter` for each row
+          mapping: |
+            .* run-setup false
+            plugins/httpapi/.* run-all true
+            plugins/module_utils/.* run-all true
+            plugins/action/dcnm_interface.py run-interface true
+            plugins/action/dcnm_inventory.py run-inventory true
+            plugins/action/dcnm_vrf.py run-vrf true
+            plugins/modules/dcnm_inventory.py run-inventory true
+            plugins/modules/dcnm_interface.py run-interface true
+            plugins/modules/dcnm_links.py run-links true
+            plugins/modules/dcnm_network.py run-network true
+            plugins/modules/dcnm_policy.py run-policy true
+            plugins/modules/dcnm_resource_manager.py run-resource_manager true
+            plugins/modules/dcnm_rest.py run-rest true
+            plugins/modules/dcnm_service_node.py run-service_node true
+            plugins/modules/dcnm_service_policy.py run-service_policy true
+            plugins/modules/dcnm_service_route_peering.py run-service_route_peering true
+            plugins/modules/dcnm_template.py run-template true
+            plugins/modules/dcnm_vrf.py run-vrf true
 
-                
-      - unit-tests:
-          requires:
-            - build
-          matrix:
-            parameters:
-              ansible_version:
-                - 2.12.10
-                - 2.13.8
+            tests/unit/modules/dcnm run-all-unit true
+
+            tests/integration/targets/dcnm_inventory/.* run-inventory true
+            tests/integration/targets/dcnm_interface/.* run-interface true
+            tests/integration/targets/dcnm_links/.* run-links true
+            tests/integration/targets/dcnm_network/.* run-network true
+            tests/integration/targets/dcnm_policy/.* run-policy true
+            tests/integration/targets/dcnm_resource_manager/.* run-resource_manager true
+            tests/integration/targets/dcnm_fabric/.* run-all true
+            tests/integration/targets/dcnm_service_node/.* run-service_node true
+            tests/integration/targets/dcnm_service_policy/.* run-service_policy true
+            tests/integration/targets/dcnm_service_route_peering/.* run-service_route_peering true
+            tests/integration/targets/dcnm_template/.* run-template true
+            tests/integration/targets/dcnm_vrf/.* run-vrf true
+            tests/integration/targets/prepare_dcnm_intf/tasks/.* run-all true
+            tests/integration/targets/prepare_dcnm_links/tasks/.* run-links true
+            tests/integration/targets/prepare_dcnm_policy/tasks/.* run-policy true
+            tests/integration/targets/prepare_dcnm_service_policy/tasks/.* run-service_policy true
+            tests/integration/targets/prepare_dcnm_service_route_peering/tasks/.* run-service_route_peering true
+            tests/integration/targets/prepare_dcnm_template/tasks/.* run-template true
+
+
+            # module-a/.* run-module-a true
+            # module-b/.* run-module-b true
+
+  all-unit:
+    when: 
+      or:
+        - << pipeline.parameters.run-all >>
+        - << pipeline.parameters.run-all-unit >>
+    jobs:
+      - all-unit_job
+
+
+  interface:
+    when: 
+      or:
+        - << pipeline.parameters.run-all >>
+        - << pipeline.parameters.run-interface >>
+    jobs:
+      - interface_job
+  inventory:
+    when: 
+      or:
+        - << pipeline.parameters.run-all >>
+        - << pipeline.parameters.run-inventory >>
+    jobs:
+      - inventory_job
+  vrf:
+    when:
+      or:
+        - << pipeline.parameters.run-all >>
+        - << pipeline.parameters.run-vrf >>
+    jobs:
+      - vrf_job
+  links:
+    when:
+      or:
+        - << pipeline.parameters.run-all >>
+        - << pipeline.parameters.run-links >>
+    jobs:
+      - links_job
+  network:
+    when:
+      or:
+        - << pipeline.parameters.run-all >>
+        - << pipeline.parameters.run-network >>
+    jobs:
+      - network_job
+  policy:
+    when:
+      or:
+        - << pipeline.parameters.run-all >>
+        - << pipeline.parameters.run-policy >>
+    jobs:
+      - policy_job
+
+  resource_manager:
+    when:
+      or:
+        - << pipeline.parameters.run-all >>
+        - << pipeline.parameters.run-resource_manager >>
+    jobs:
+      - resource_manager_job
+
+  service_node:
+    when:
+      or:
+        - << pipeline.parameters.run-all >>
+        - << pipeline.parameters.run-service_node >>
+    jobs:
+      - service_node_job
+
+  service_policy:
+    when:
+      or:
+        - << pipeline.parameters.run-all >>
+        - << pipeline.parameters.run-service_policy >>
+    jobs:
+      - service_policy_job
+
+  service_route_peering:
+    when:
+      or:
+        - << pipeline.parameters.run-all >>
+        - << pipeline.parameters.run-service_route_peering >>
+    jobs:
+      - service_route_peering_job
+
+  template:
+    when:
+      or:
+        - << pipeline.parameters.run-all >>
+        - << pipeline.parameters.run-template >>
+    jobs:
+      - template_job
+
+  rest:
+    when: 
+      or:
+        - << pipeline.parameters.run-all >>
+        - << pipeline.parameters.run-rest >>
+    jobs:
+      - rest_job
 
 
