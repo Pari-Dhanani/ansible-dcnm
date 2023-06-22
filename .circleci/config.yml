@@ -65,7 +65,6 @@ jobs:
 
     steps:
       - checkout
-
       - run:
           name: Set up Python 3.9
           command: |
