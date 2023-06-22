@@ -9,7 +9,7 @@ orbs:
 parameters:
   run-setup:
     type: boolean
-    default: false
+    default: true
   run-inventory:
     type: boolean
     default: false
@@ -176,8 +176,6 @@ jobs:
           name: Run DCNM Unit tests
           command: |
             coverage run --source=. -m pytest tests/unit/modules/dcnm/.
-
-
 
 
 workflows:
