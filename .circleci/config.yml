@@ -1,5 +1,58 @@
 version: 2.1
 
+setup: << pipeline.parameters.run-setup >>
+
+orbs:
+  path-filtering: circleci/path-filtering@0.1.6
+
+
+parameters:
+  run-setup:
+    type: boolean
+    default: false
+  run-inventory:
+    type: boolean
+    default: false
+  run-interface:
+    type: boolean
+    default: false
+  run-links:
+    type: boolean
+    default: false
+  run-network:
+    type: boolean
+    default: false
+  run-policy:
+    type: boolean
+    default: false
+  run-resource_manager:
+    type: boolean
+    default: false
+  run-rest:
+    type: boolean
+    default: false
+  run-service_node:
+    type: boolean
+    default: false
+  run-service_policy:
+    type: boolean
+    default: false
+  run-service_route_peering:
+    type: boolean
+    default: false
+  run-template:
+    type: boolean
+    default: false
+  run-vrf:
+    type: boolean
+    default: false
+  run-all-unit:
+    type: boolean
+    default: false
+  run-all:
+    type: boolean
+    default: false
+
 jobs:
   build:
     parameters:
@@ -7,73 +60,48 @@ jobs:
         type: string
 
     working_directory: ~/repo
-
-    docker:
-      - image: circleci/python:3.9
-
-    steps:
-      - checkout
-
-      - setup_remote_docker:
-          version: 20.10.7
-      
-      - run:
-          name: Installed (v<< parameters.ansible_version >>)
-          command: echo install https://github.com/ansible/ansible/archive/v<< parameters.ansible_version >>.tar.gz --disable-pip-version-check
-
-
-  sanity:
-    parameters:
-      ansible_version:
-        type: string
-      py_version:
-        type: string
-
-    working_directory: ~/repo
-    docker:
-      - image: circleci/python:3.9
+    machine: true
+    resource_class: cisco/ansible-dcnm
 
     steps:
       - checkout
-
-      - setup_remote_docker:
-          version: 20.10.7
 
       - run:
           name: Set up Python 3.9
           command: |
             sudo apt-get update
             sudo apt-get install -y python3.9
-
+      
       - run:
           name: Install ansible-base (v<< parameters.ansible_version >>
           command: pip install https://github.com/ansible/ansible/archive/v<< parameters.ansible_version >>.tar.gz --disable-pip-version-check
-          
+
       - run:
-          name: Install the collection tarball
+          name: Install DCNM collection
           command: ansible-galaxy collection install cisco.dcnm
-    
 
       - run:
-          name: Run sanity tests
-          command: |
-            pwd
-            cd ..
-            cd .ansible/collections/ansible_collections/cisco/dcnm/ 
-            pwd
-            ansible-test sanity --docker --python << parameters.py_version >> -v --color --truncate 0
-          environment:
-            PYTHONPATH: /home/circleci/.ansible/collections
+          name: Install coverage (v4.5.4)
+          command: pip install coverage==4.5.4
 
-  unit-tests:
+      - run:
+          name: Install pytest (v5.4.1)
+          command: pip install pytest==5.4.1
+
+      - run:
+          name: Build a DCNM collection tarball
+          command: ansible-galaxy collection build --output-path "${HOME}/.cache/collection-tarballs"
+
+  sanity:
     parameters:
       ansible_version:
         type: string
-
+      modulename:
+        type: string
 
     working_directory: ~/repo
-    docker:
-      - image: circleci/python:3.9
+    machine: true
+    resource_class: cisco/ansible-dcnm
 
     steps:
       - checkout
@@ -90,68 +118,419 @@ jobs:
       - run:
           name: Install ansible-base (v<< parameters.ansible_version >>)
           command: pip install https://github.com/ansible/ansible/archive/v<< parameters.ansible_version >>.tar.gz --disable-pip-version-check
-
-      - run:
-          name: Install coverage (v4.5.4)
-          command: pip install coverage==4.5.4
-
-      - run:
-          name: Install pytest (v5.4.1)
-          command: pip install pytest==5.4.1
+      
           
       - run:
           name: Install the collection tarball
-          command: ansible-galaxy collection install cisco.dcnm
+          command: ansible-galaxy collection install ${HOME}/.cache/collection-tarballs/*.tar.gz
+
       - run:
-          name: change directory
+          name: Run DCNM Unit tests for << parameters.modulename >>
           command: |
-            pwd
-            cd ..
-            cd .ansible/collections/ansible_collections/cisco/dcnm/
-            pwd
+            coverage run --source=. -m pytest tests/unit/modules/dcnm/test_dcnm_<< parameters.modulename >>.py
+
+      - run:
+          name: Run sanity tests py 3.8 for << parameters.modulename >>
+          command: echo done
+          # command: ansible-test sanity --python 3.8 -v --color --truncate 0
+          # environment:
+          #   PYTHONPATH: /home/circleci/.ansible/collections/ansible_collections/cisco/dcnm
+
+      - run:
+          name: Run sanity tests py 3.9 for << parameters.modulename >>
+          command: echo done
+          # command: ansible-test sanity --python 3.9 -v --color --truncate 0
+          # environment:
+          #   PYTHONPATH: /home/circleci/.ansible/collections/ansible_collections/cisco/dcnm
+
+
+
+  unit-tests:
+    parameters:
+      ansible_version:
+        type: string
+
+
+    working_directory: ~/repo
+    machine: true
+    resource_class: cisco/ansible-dcnm
+
+    steps:
+      - checkout
+
+      - run:
+          name: Set up Python 3.9
+          command: |
+            sudo apt-get update
+            sudo apt-get install -y python3.9
+
+      - run:
+          name: Install ansible-base (v<< parameters.ansible_version >>)
+          command: pip install https://github.com/ansible/ansible/archive/v<< parameters.ansible_version >>.tar.gz --disable-pip-version-check
+
+
+      - run:
+          name: Install the collection tarball
+          command: ansible-galaxy collection install ${HOME}/.cache/collection-tarballs/*.tar.gz
 
       - run:
           name: Run DCNM Unit tests
-          environment:
-            PYTHONPATH: /home/runner/.ansible/collections
           command: |
-            pwd
-            cd ..
-            cd .ansible/collections/ansible_collections/cisco/dcnm/ 
-            pwd
             coverage run --source=. -m pytest tests/unit/modules/dcnm/.
 
+
+
+
 workflows:
-  build-test-and-deploy:
+  pre:
+    when: << pipeline.parameters.run-setup >>
     jobs:
+
       - build:
           matrix:
             parameters:
               ansible_version:
+              - 2.9.26
+              - 2.10.17
+              - 2.11.12
               - 2.12.10
               - 2.13.8
+              - 2.14.2
 
-                
-      - sanity:
+      - path-filtering/filter:
           requires:
             - build
-          matrix:
-            parameters:
-              py_version:
-                - "3.8"
-                - "3.9"
-              ansible_version:
-                - 2.12.10
-                - 2.13.8
+          # Compare files on develop
+          base-revision: develop
+          # Config for continuation; herein we reuse this config itself
+          config-path: .circleci/config.yml
+          # 3-column space-separated table for mapping; `path-to-test parameter-to-set value-for-parameter` for each row
+          mapping: |
+            .* run-setup false
+            plugins/httpapi/.* run-all true
+            plugins/module_utils/.* run-all true
+            plugins/action/dcnm_interface.py run-interface true
+            plugins/action/dcnm_inventory.py run-inventory true
+            plugins/action/dcnm_vrf.py run-vrf true
+            plugins/modules/dcnm_inventory.py run-inventory true
+            plugins/modules/dcnm_interface.py run-interface true
+            plugins/modules/dcnm_links.py run-links true
+            plugins/modules/dcnm_network.py run-network true
+            plugins/modules/dcnm_policy.py run-policy true
+            plugins/modules/dcnm_resource_manager.py run-resource_manager true
+            plugins/modules/dcnm_rest.py run-rest true
+            plugins/modules/dcnm_service_node.py run-service_node true
+            plugins/modules/dcnm_service_policy.py run-service_policy true
+            plugins/modules/dcnm_service_route_peering.py run-service_route_peering true
+            plugins/modules/dcnm_template.py run-template true
+            plugins/modules/dcnm_vrf.py run-vrf true
 
-                
+            tests/unit/modules/dcnm run-all-unit true
+
+            tests/integration/targets/dcnm_inventory/.* run-inventory true
+            tests/integration/targets/dcnm_interface/.* run-interface true
+            tests/integration/targets/dcnm_links/.* run-links true
+            tests/integration/targets/dcnm_network/.* run-network true
+            tests/integration/targets/dcnm_policy/.* run-policy true
+            tests/integration/targets/dcnm_resource_manager/.* run-resource_manager true
+            tests/integration/targets/dcnm_fabric/.* run-all true
+            tests/integration/targets/dcnm_service_node/.* run-service_node true
+            tests/integration/targets/dcnm_service_policy/.* run-service_policy true
+            tests/integration/targets/dcnm_service_route_peering/.* run-service_route_peering true
+            tests/integration/targets/dcnm_template/.* run-template true
+            tests/integration/targets/dcnm_vrf/.* run-vrf true
+            tests/integration/targets/prepare_dcnm_intf/tasks/.* run-all true
+            tests/integration/targets/prepare_dcnm_links/tasks/.* run-links true
+            tests/integration/targets/prepare_dcnm_policy/tasks/.* run-policy true
+            tests/integration/targets/prepare_dcnm_service_policy/tasks/.* run-service_policy true
+            tests/integration/targets/prepare_dcnm_service_route_peering/tasks/.* run-service_route_peering true
+            tests/integration/targets/prepare_dcnm_template/tasks/.* run-template true
+
+
+            # module-a/.* run-module-a true
+            # module-b/.* run-module-b true
+
+  all-unit:
+    when: 
+      # or:
+      #   - << pipeline.parameters.run-all >>
+        << pipeline.parameters.run-all-unit >>
+    jobs:
       - unit-tests:
           requires:
             - build
           matrix:
             parameters:
               ansible_version:
+                - 2.9.26
+                - 2.10.17
+                - 2.11.12
                 - 2.12.10
                 - 2.13.8
+                - 2.14.2
+
+
+
+  interface:
+    when: 
+      or:
+        - << pipeline.parameters.run-all >>
+        - << pipeline.parameters.run-interface >>
+    jobs:
+      - sanity:
+          requires:
+            - build
+          matrix:
+            parameters:
+
+              modulename:
+                - interface
+              ansible_version:
+                - 2.9.26
+                - 2.10.17
+                - 2.11.12
+                - 2.12.10
+                - 2.13.8
+                - 2.14.2
+      # - interface_job
+  inventory:
+    when: 
+      or:
+        - << pipeline.parameters.run-all >>
+        - << pipeline.parameters.run-inventory >>
+    jobs:
+      - sanity:
+          requires:
+            - build
+          matrix:
+            parameters:
+
+              modulename:
+                - inventory
+              ansible_version:
+                - 2.9.26
+                - 2.10.17
+                - 2.11.12
+                - 2.12.10
+                - 2.13.8
+                - 2.14.2
+      # - inventory_job
+  vrf:
+    when:
+      or:
+        - << pipeline.parameters.run-all >>
+        - << pipeline.parameters.run-vrf >>
+    jobs:
+      - sanity:
+          requires:
+            - build
+          matrix:
+            parameters:
+
+              modulename:
+                - vrf
+              ansible_version:
+                - 2.9.26
+                - 2.10.17
+                - 2.11.12
+                - 2.12.10
+                - 2.13.8
+                - 2.14.2
+  links:
+    when:
+      or:
+        - << pipeline.parameters.run-all >>
+        - << pipeline.parameters.run-links >>
+    jobs:
+      - sanity:
+          requires:
+            - build
+          matrix:
+            parameters:
+
+              modulename:
+                - links
+              ansible_version:
+                - 2.9.26
+                - 2.10.17
+                - 2.11.12
+                - 2.12.10
+                - 2.13.8
+                - 2.14.2
+  network:
+    when:
+      or:
+        - << pipeline.parameters.run-all >>
+        - << pipeline.parameters.run-network >>
+    jobs:
+      - sanity:
+          requires:
+            - build
+          matrix:
+            parameters:
+
+              modulename:
+                - network
+              ansible_version:
+                - 2.9.26
+                - 2.10.17
+                - 2.11.12
+                - 2.12.10
+                - 2.13.8
+                - 2.14.2
+  policy:
+    when:
+      or:
+        - << pipeline.parameters.run-all >>
+        - << pipeline.parameters.run-policy >>
+    jobs:
+      - sanity:
+          requires:
+            - build
+          matrix:
+            parameters:
+
+              modulename:
+                - policy
+              ansible_version:
+                - 2.9.26
+                - 2.10.17
+                - 2.11.12
+                - 2.12.10
+                - 2.13.8
+                - 2.14.2
+
+  resource_manager:
+    when:
+      or:
+        - << pipeline.parameters.run-all >>
+        - << pipeline.parameters.run-resource_manager >>
+    jobs:
+      - sanity:
+          requires:
+            - build
+          matrix:
+            parameters:
+
+              modulename:
+                - resource_manager
+              ansible_version:
+                - 2.9.26
+                - 2.10.17
+                - 2.11.12
+                - 2.12.10
+                - 2.13.8
+                - 2.14.2
+
+  service_node:
+    when:
+      or:
+        - << pipeline.parameters.run-all >>
+        - << pipeline.parameters.run-service_node >>
+    jobs:
+      - sanity:
+          requires:
+            - build
+          matrix:
+            parameters:
+
+              modulename:
+                - service_node
+              ansible_version:
+                - 2.9.26
+                - 2.10.17
+                - 2.11.12
+                - 2.12.10
+                - 2.13.8
+                - 2.14.2
+
+  service_policy:
+    when:
+      or:
+        - << pipeline.parameters.run-all >>
+        - << pipeline.parameters.run-service_policy >>
+    jobs:
+      - sanity:
+          requires:
+            - build
+          matrix:
+            parameters:
+
+              modulename:
+                - service_policy_job
+              ansible_version:
+                - 2.9.26
+                - 2.10.17
+                - 2.11.12
+                - 2.12.10
+                - 2.13.8
+                - 2.14.2
+      
+
+  service_route_peering:
+    when:
+      or:
+        - << pipeline.parameters.run-all >>
+        - << pipeline.parameters.run-service_route_peering >>
+    jobs:
+      - sanity:
+          requires:
+            - build
+          matrix:
+            parameters:
+
+              modulename:
+                - service_route_peering
+              ansible_version:
+                - 2.9.26
+                - 2.10.17
+                - 2.11.12
+                - 2.12.10
+                - 2.13.8
+                - 2.14.2
+
+  template:
+    when:
+      or:
+        - << pipeline.parameters.run-all >>
+        - << pipeline.parameters.run-template >>
+    jobs:
+      - sanity:
+          requires:
+            - build
+          matrix:
+            parameters:
+
+              modulename:
+                - template
+              ansible_version:
+                - 2.9.26
+                - 2.10.17
+                - 2.11.12
+                - 2.12.10
+                - 2.13.8
+                - 2.14.2
+
+  rest:
+    when: 
+      or:
+        - << pipeline.parameters.run-all >>
+        - << pipeline.parameters.run-rest >>
+    jobs:
+      - sanity:
+          requires:
+            - build
+          matrix:
+            parameters:
+              modulename:
+                - rest
+              ansible_version:
+                - 2.9.26
+                - 2.10.17
+                - 2.11.12
+                - 2.12.10
+                - 2.13.8
+                - 2.14.2
+
 
 
