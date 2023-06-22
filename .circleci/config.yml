@@ -72,7 +72,7 @@ jobs:
             sudo apt-get install -y python3.9
       
       - run:
-          name: Install ansible-base (v<< parameters.ansible_version >>
+          name: Install ansible-base (v<< parameters.ansible_version >>)
           command: pip install https://github.com/ansible/ansible/archive/v<< parameters.ansible_version >>.tar.gz --disable-pip-version-check
 
       - run:
@@ -89,7 +89,7 @@ jobs:
 
       - run:
           name: Build a DCNM collection tarball
-          command: ansible-galaxy collection build --output-path "${HOME}/.cache/collection-tarballs"
+          command: ansible-galaxy collection build --output-path "${HOME}/.cache/v<< parameters.ansible_version >>/collection-tarballs"
 
   sanity:
     parameters:
@@ -121,7 +121,7 @@ jobs:
           
       - run:
           name: Install the collection tarball
-          command: ansible-galaxy collection install ${HOME}/.cache/collection-tarballs/*.tar.gz
+          command: ansible-galaxy collection install ${HOME}/.cache/v<< parameters.ansible_version >>/collection-tarballs/*.tar.gz
 
       - run:
           name: Run DCNM Unit tests for << parameters.modulename >>
@@ -170,7 +170,7 @@ jobs:
 
       - run:
           name: Install the collection tarball
-          command: ansible-galaxy collection install ${HOME}/.cache/collection-tarballs/*.tar.gz
+          command: ansible-galaxy collection install ${HOME}/.cache/v<< parameters.ansible_version >>/collection-tarballs/*.tar.gz
 
       - run:
           name: Run DCNM Unit tests
