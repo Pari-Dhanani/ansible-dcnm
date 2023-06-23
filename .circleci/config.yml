@@ -89,7 +89,7 @@ jobs:
 
       - run:
           name: Build a DCNM collection tarball
-          command: ansible-galaxy collection build --output-path "${HOME}/.cache/v<< parameters.ansible_version >>/collection-tarballs"
+          command: ansible-galaxy collection build --force --output-path "${HOME}/.cache/v<< parameters.ansible_version >>/collection-tarballs"
 
   sanity:
     parameters:
