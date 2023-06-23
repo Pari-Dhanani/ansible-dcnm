@@ -7,6 +7,7 @@ orbs:
 
 
 parameters:
+
   run-setup:
     type: boolean
     default: true
@@ -55,7 +56,7 @@ parameters:
 
 jobs:
   build:
-    parameters:
+    parameters:      
       ansible_version:
         type: string
 
@@ -66,16 +67,6 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Set up Python 3.9
-          command: |
-            sudo apt-get update
-            sudo apt-get install -y python3.9
-      
-      - run:
-          name: Install ansible-base (v<< parameters.ansible_version >>)
-          command: python3 --version 3.9 -m pip install https://github.com/ansible/ansible/archive/v<< parameters.ansible_version >>.tar.gz --disable-pip-version-check
-
-      - run:
           name: Install coverage (v4.5.4)
           command: pip install coverage==4.5.4
 
@@ -84,14 +75,21 @@ jobs:
           command: pip install pytest==5.4.1
 
       - run:
-          name: Build a DCNM collection tarball
-          command: ansible-galaxy collection build --force --output-path "${HOME}/.cache/v<< parameters.ansible_version >>/collection-tarballs"
+          name: Activate Python 3.9 Environment, Install ansible and Build collection tarball
+          command: |
+            pyenv local pyenv_3.9
+            pip install https://github.com/ansible/ansible/archive/v<< parameters.ansible_version >>.tar.gz --disable-pip-version-check
+            ansible-galaxy collection build --force --output-path "${HOME}/.cache/v<< parameters.ansible_version >>/collection-tarballs"
+            pyenv local system
+
 
   sanity:
     parameters:
       ansible_version:
         type: string
       modulename:
+        type: string
+      py_version:
         type: string
 
     working_directory: ~/.ansible/collections
@@ -102,10 +100,12 @@ jobs:
       - checkout
 
       - run:
-          name: Set up Python 3.9
+          name: Activating Python << parameters.modulename >> env
           command: |
-            sudo apt-get update
-            sudo apt-get install -y python3.9
+            pyenv local pyenv_<< parameters.modulename >>
+          environment:
+            PYTHONPATH: /home/circleci/.ansible/collections/:$PYTHONPATH
+
 
       - run:
           name: Install ansible-base (v<< parameters.ansible_version >>)
@@ -127,11 +127,13 @@ jobs:
           command: echo done
           # command: ansible-test sanity --python 3.8 -v --color --truncate 0
           # environment:
-          #   PYTHONPATH: /home/circleci/.ansible/collections/ansible_collections/cisco/dcnm
+          #   PYTHONPATH: /home/circleci/.ansible/collections/
 
       - run:
           name: Run sanity tests py 3.9 for << parameters.modulename >>
-          command: echo done
+          command: |
+            echo done
+            pyenv local system
           # command: ansible-test sanity --python 3.9 -v --color --truncate 0
           # environment:
           #   PYTHONPATH: /home/circleci/.ansible/collections/ansible_collections/cisco/dcnm
@@ -144,7 +146,7 @@ jobs:
         type: string
 
 
-    working_directory: ~/.ansible/collections
+    working_directory: ~/repo
     machine: true
     resource_class: cisco/ansible-dcnm
 
@@ -152,10 +154,9 @@ jobs:
       - checkout
 
       - run:
-          name: Set up Python 3.9
+          name: Activate Python 3.9 Environment
           command: |
-            sudo apt-get update
-            sudo apt-get install -y python3.9
+            pyenv local pyenv_3.9
 
       - run:
           name: Install ansible-base (v<< parameters.ansible_version >>)
@@ -250,6 +251,7 @@ workflows:
       - unit-tests:
           matrix:
             parameters:
+
               ansible_version:
                 - 2.9.26
                 - 2.10.17
@@ -270,6 +272,9 @@ workflows:
 
           matrix:
             parameters:
+              py_version:
+                - "3.8"
+                - "3.9"
               modulename:
                 - interface
               ansible_version:
@@ -290,7 +295,9 @@ workflows:
 
           matrix:
             parameters:
-
+              py_version:
+                - "3.8"
+                - "3.9"
               modulename:
                 - inventory
               ansible_version:
@@ -311,7 +318,9 @@ workflows:
 
           matrix:
             parameters:
-
+              py_version:
+                - "3.8"
+                - "3.9"
               modulename:
                 - vrf
               ansible_version:
@@ -331,7 +340,9 @@ workflows:
 
           matrix:
             parameters:
-
+              py_version:
+                - "3.8"
+                - "3.9"
               modulename:
                 - links
               ansible_version:
@@ -351,7 +362,9 @@ workflows:
 
           matrix:
             parameters:
-
+              py_version:
+                - "3.8"
+                - "3.9"
               modulename:
                 - network
               ansible_version:
@@ -371,7 +384,9 @@ workflows:
 
           matrix:
             parameters:
-
+              py_version:
+                - "3.8"
+                - "3.9"
               modulename:
                 - policy
               ansible_version:
@@ -392,7 +407,9 @@ workflows:
 
           matrix:
             parameters:
-
+              py_version:
+                - "3.8"
+                - "3.9"
               modulename:
                 - resource_manager
               ansible_version:
@@ -413,7 +430,9 @@ workflows:
 
           matrix:
             parameters:
-
+              py_version:
+                - "3.8"
+                - "3.9"
               modulename:
                 - service_node
               ansible_version:
@@ -434,7 +453,9 @@ workflows:
 
           matrix:
             parameters:
-
+              py_version:
+                - "3.8"
+                - "3.9"
               modulename:
                 - service_policy_job
               ansible_version:
@@ -456,7 +477,9 @@ workflows:
 
           matrix:
             parameters:
-
+              py_version:
+                - "3.8"
+                - "3.9"
               modulename:
                 - service_route_peering
               ansible_version:
@@ -477,7 +500,9 @@ workflows:
 
           matrix:
             parameters:
-
+              py_version:
+                - "3.8"
+                - "3.9"
               modulename:
                 - template
               ansible_version:
@@ -498,6 +523,9 @@ workflows:
 
           matrix:
             parameters:
+              py_version:
+                - "3.8"
+                - "3.9"
               modulename:
                 - rest
               ansible_version:
