@@ -250,8 +250,6 @@ workflows:
         << pipeline.parameters.run-all-unit >>
     jobs:
       - unit-tests:
-          requires:
-            - build
           matrix:
             parameters:
               ansible_version:
@@ -271,11 +269,9 @@ workflows:
         - << pipeline.parameters.run-interface >>
     jobs:
       - sanity:
-          requires:
-            - build
+
           matrix:
             parameters:
-
               modulename:
                 - interface
               ansible_version:
@@ -293,8 +289,7 @@ workflows:
         - << pipeline.parameters.run-inventory >>
     jobs:
       - sanity:
-          requires:
-            - build
+
           matrix:
             parameters:
 
@@ -315,8 +310,7 @@ workflows:
         - << pipeline.parameters.run-vrf >>
     jobs:
       - sanity:
-          requires:
-            - build
+
           matrix:
             parameters:
 
@@ -336,8 +330,7 @@ workflows:
         - << pipeline.parameters.run-links >>
     jobs:
       - sanity:
-          requires:
-            - build
+
           matrix:
             parameters:
 
@@ -357,8 +350,7 @@ workflows:
         - << pipeline.parameters.run-network >>
     jobs:
       - sanity:
-          requires:
-            - build
+
           matrix:
             parameters:
 
@@ -378,8 +370,7 @@ workflows:
         - << pipeline.parameters.run-policy >>
     jobs:
       - sanity:
-          requires:
-            - build
+
           matrix:
             parameters:
 
@@ -400,8 +391,7 @@ workflows:
         - << pipeline.parameters.run-resource_manager >>
     jobs:
       - sanity:
-          requires:
-            - build
+
           matrix:
             parameters:
 
@@ -422,8 +412,7 @@ workflows:
         - << pipeline.parameters.run-service_node >>
     jobs:
       - sanity:
-          requires:
-            - build
+
           matrix:
             parameters:
 
@@ -444,8 +433,7 @@ workflows:
         - << pipeline.parameters.run-service_policy >>
     jobs:
       - sanity:
-          requires:
-            - build
+
           matrix:
             parameters:
 
@@ -467,8 +455,7 @@ workflows:
         - << pipeline.parameters.run-service_route_peering >>
     jobs:
       - sanity:
-          requires:
-            - build
+
           matrix:
             parameters:
 
@@ -489,8 +476,7 @@ workflows:
         - << pipeline.parameters.run-template >>
     jobs:
       - sanity:
-          requires:
-            - build
+
           matrix:
             parameters:
 
@@ -511,8 +497,7 @@ workflows:
         - << pipeline.parameters.run-rest >>
     jobs:
       - sanity:
-          requires:
-            - build
+
           matrix:
             parameters:
               modulename:
