@@ -94,7 +94,7 @@ jobs:
       modulename:
         type: string
 
-    working_directory: ~/repo
+    working_directory: ~/.ansible/collections
     machine: true
     resource_class: cisco/ansible-dcnm
 
@@ -144,7 +144,7 @@ jobs:
         type: string
 
 
-    working_directory: ~/repo
+    working_directory: ~/.ansible/collections
     machine: true
     resource_class: cisco/ansible-dcnm
 
