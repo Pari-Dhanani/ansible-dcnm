@@ -72,7 +72,7 @@ jobs:
           command: |
             echo 'export PYENV_ROOT="$HOME/.pyenv"' >> ~/.bashrc
             echo 'export PATH="$PYENV_ROOT/bin:$PATH"' >> ~/.bashrc
-            echo -e 'if command -v pyenv 1>/dev/null 2>&1; then\n eval "$(pyenv init -)"\nfi' >> ~/.bashrc
+            echo -e 'if command -v pyenv 1>/dev/null 2>&1; then\n eval "$(pyenv init --path)"\n  eval "$(pyenv virtualenv-init -)"\nfi' >> ~/.bashrc
             cat ~/.bashrc
             pyenv local pyenv_3.9
             pip install https://github.com/ansible/ansible/archive/v<< parameters.ansible_version >>.tar.gz --disable-pip-version-check
