@@ -93,6 +93,7 @@ jobs:
             export PATH="$PYENV_ROOT/shims/python:$PATH"
             export PYTHONPATH="$PYENV_ROOT/shims/python3:$PYTHONPATH"
             export PYTHONPATH="$PYENV_ROOT/shims/python:$PYTHONPATH"
+            
             echo $PYTHONPATH
             echo $PATH
             echo $HOME
