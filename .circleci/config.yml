@@ -92,10 +92,10 @@ jobs:
             export PATH="$PYENV_ROOT/shims/python3:$PATH"
             export PYTHONPATH="$PYENV_ROOT/shims/python3"
             echo $PYTHONPATH
-            which python3
-            pyenv local python_3.9
-            which python3
-            python3 --version
+            
+            /home/circleci/.pyenv/bin/pyenv local python_3.9
+            which python
+            python --version
             pip install https://github.com/ansible/ansible/archive/v<< parameters.ansible_version >>.tar.gz --disable-pip-version-check
             ansible --version
             pyenv versions
