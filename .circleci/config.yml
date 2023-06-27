@@ -93,11 +93,14 @@ jobs:
             export PATH="$PYENV_ROOT/shims/python:$PATH"
             export PYTHONPATH="$PYENV_ROOT/shims/python3:$PYTHONPATH"
             export PYTHONPATH="$PYENV_ROOT/shims/python:$PYTHONPATH"
-            
+            echo "**********************"
+            whoami
+            echo "**********************"
             echo $PYTHONPATH
             echo $PATH
             echo $HOME
             echo $PYENV_ROOT
+            echo "**********************"
             /home/circleci/.pyenv/bin/pyenv local python_3.9
             /home/circleci/.pyenv/bin/pyenv versions
             /root/.pyenv/shims/python --version
