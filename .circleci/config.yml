@@ -90,7 +90,7 @@ jobs:
             
             /home/circleci/.pyenv/bin/pyenv local python_3.9
             /home/circleci/.pyenv/bin/pyenv versions
-            
+            python --version
   
   sanity:
     parameters:
