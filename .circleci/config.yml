@@ -56,7 +56,7 @@ parameters:
 
 jobs:
   install:
-    working_directory: ~/repo
+    working_directory: /home/circleci
     machine: true
     resource_class: cisco/ansible-dcnm
     steps:
@@ -71,13 +71,13 @@ jobs:
             cat ~/.bashrc
             source ~/.bashrc
             pip list
-            who am i
+            whoami
   build:
     parameters:      
       ansible_version:
         type: string
 
-    working_directory: ~/repo
+    working_directory: /home/circleci
     machine: true
     resource_class: cisco/ansible-dcnm
 
@@ -88,7 +88,7 @@ jobs:
           name: Activate Python 3.9 Environment, Install ansible and Build collection tarball
           command: |
             pip list
-            who am i
+            whoami
             pyenv local python_3.9
             pip install https://github.com/ansible/ansible/archive/v<< parameters.ansible_version >>.tar.gz --disable-pip-version-check
             ansible-galaxy collection build --force --output-path "${HOME}/.cache/v<< parameters.ansible_version >>/collection-tarballs"
