@@ -103,7 +103,7 @@ jobs:
             echo "**********************"
             /home/circleci/.pyenv/bin/pyenv local python_3.9
             /home/circleci/.pyenv/bin/pyenv versions
-            /root/.pyenv/shims/python --version
+            /home/circleci/.pyenv/shims/python --version
             python3 --version
             python --version
 
