@@ -102,8 +102,6 @@ jobs:
             python3 --version
             python --version
 
-            
-  
   sanity:
     parameters:
       ansible_version:
