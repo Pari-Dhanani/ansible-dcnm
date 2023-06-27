@@ -87,7 +87,7 @@ jobs:
       - run:
           name: Activate Python 3.9 Environment, Install ansible and Build collection tarball
           command: |
-            export PYENV_ROOT="/root/.pyenv"
+            export PYENV_ROOT="/home/circleci/.pyenv"
             export PATH="$PYENV_ROOT/bin:$PATH"
             export PATH="$PYENV_ROOT/shims/python3:$PATH"
             export PATH="$PYENV_ROOT/shims/python:$PATH"
