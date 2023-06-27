@@ -55,6 +55,24 @@ parameters:
     default: false
 
 jobs:
+  install:
+    working_directory: ~/repo
+    machine: true
+    resource_class: cisco/ansible-dcnm
+    steps:
+      - checkout
+
+      - run:
+          name: Download pyenv
+          command: |
+            pwd
+            ssh-keyscan github.com >> ~/.ssh/known_hosts
+            cat ~/.ssh/known_hosts
+            curl https://pyenv.run | bash | echo done
+            echo 'export PYENV_ROOT="$HOME/.pyenv"' >> ~/.bashrc
+            echo 'export PATH="$PYENV_ROOT/bin:$PATH"' >> ~/.bashrc
+            echo -e 'if command -v pyenv 1>/dev/null 2>&1; then\n eval "$(pyenv init --path)"\n eval "$(pyenv virtualenv-init -)"\nfi' >> ~/.bashrc
+
   build:
     parameters:      
       ansible_version:
@@ -68,15 +86,6 @@ jobs:
       - checkout
 
       - run:
-          name: Download pyenv
-          command: |
-            ssh-keyscan github.com >> ~/.ssh/known_hosts
-            curl https://pyenv.run | bash
-            echo 'export PYENV_ROOT="$HOME/.pyenv"' >> ~/.bashrc
-            echo 'export PATH="$PYENV_ROOT/bin:$PATH"' >> ~/.bashrc
-            echo -e 'if command -v pyenv 1>/dev/null 2>&1; then\n eval "$(pyenv init --path)"\n eval "$(pyenv virtualenv-init -)"\nfi' >> ~/.bashrc
-
-      - run:
           name: Activate Python 3.9 Environment, Install ansible and Build collection tarball
           command: |
             pip list
@@ -86,8 +95,7 @@ jobs:
             pip install pytest==5.4.1
             pip install coverage==4.5.4
             pyenv local system
-
-
+  
   sanity:
     parameters:
       ansible_version:
@@ -182,7 +190,7 @@ workflows:
   pre:
     when: << pipeline.parameters.run-setup >>
     jobs:
-
+      - install
       - build:
           matrix:
             parameters:
