@@ -61,12 +61,11 @@ jobs:
     resource_class: cisco/ansible-dcnm
     steps:
       - checkout
-
       - run:
           name: Download pyenv
           command: |
             pwd
-            ${HOME}
+            echo ${HOME}
             set +e
             cat ~/.ssh/known_hosts
             cat ~/.bashrc
