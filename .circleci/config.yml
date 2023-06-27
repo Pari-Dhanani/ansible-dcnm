@@ -90,7 +90,7 @@ jobs:
             export PYENV_ROOT="$HOME/.pyenv"
             export PATH="$PYENV_ROOT/bin:$PATH"
             pyenv local python_3.9
-            python --version
+            python3 --version
             pip install https://github.com/ansible/ansible/archive/v<< parameters.ansible_version >>.tar.gz --disable-pip-version-check
             ansible --version
             pyenv versions
