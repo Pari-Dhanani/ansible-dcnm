@@ -7,7 +7,7 @@ orbs:
 
 
 parameters:
-
+  
   run-setup:
     type: boolean
     default: true
@@ -148,13 +148,13 @@ jobs:
 
       - run:
           name: Run DCNM Unit tests for << parameters.modulename >>
+          # cd /home/circleci/.ansible/collections/ansible_collections/cisco/dcnm
           command: |
             ls -lrt
             export PATH="/home/circleci/.ansible/collections/:$PATH"
             export PYTHONPATH="/home/circleci/.ansible/collections/:$PYTHONPATH"
             echo $PATH
             echo $PYTHONPATH
-            cd /home/circleci/.ansible/collections/ansible_collections/cisco/dcnm
             coverage run --source=. -m pytest tests/unit/modules/dcnm/test_dcnm_<< parameters.modulename >>.py
 
       - run:
@@ -170,19 +170,34 @@ jobs:
     parameters:
       ansible_version:
         type: string
-
-
+      py_version:
+        type: string
+    
     working_directory: ~/repo
     machine: true
     resource_class: cisco/ansible-dcnm
 
     steps:
       - checkout
-
+      
       - run:
-          name: Activate Python 3.9 Environment
+          name: Activating Python << parameters.py_version >> env
           command: |
-            pyenv local pyenv_3.9
+            export PYENV_ROOT="/home/circleci/.pyenv"
+            export PATH="$PYENV_ROOT/bin:$PATH"
+            export PATH="$PYENV_ROOT/shims/python3:$PATH"
+            export PATH="$PYENV_ROOT/shims/python:$PATH"
+            export PYTHONPATH="$PYENV_ROOT/shims/python3:$PYTHONPATH"
+            export PYTHONPATH="$PYENV_ROOT/shims/python:$PYTHONPATH"
+
+            export PATH="/home/circleci/.ansible/collections/:$PATH"
+            export PYTHONPATH="/home/circleci/.ansible/collections/:$PYTHONPATH"
+
+            pyenv local python_<< parameters.py_version >>
+
+          environment:
+            PYTHONPATH: /home/circleci/.ansible/collections/:$PYTHONPATH
+
 
       - run:
           name: Install ansible-base (v<< parameters.ansible_version >>)
@@ -196,6 +211,8 @@ jobs:
       - run:
           name: Run DCNM Unit tests
           command: |
+            export PATH="/home/circleci/.ansible/collections/:$PATH"
+            export PYTHONPATH="/home/circleci/.ansible/collections/:$PYTHONPATH"
             coverage run --source=. -m pytest tests/unit/modules/dcnm/.
 
 
@@ -208,11 +225,11 @@ workflows:
             parameters:
               ansible_version:
             #  - 2.9.26
-             # - 2.10.17
-             # - 2.11.12
-             # - 2.12.10
-             # - 2.13.8
-              - 2.14.2
+            #  - 2.10.17
+            #  - 2.11.12
+            #  - 2.12.10
+              - 2.13.8
+            #  - 2.14.2
 
       - path-filtering/filter:
           requires:
@@ -276,7 +293,9 @@ workflows:
       - unit-tests:
           matrix:
             parameters:
-
+              py_version:
+                - "3.8"
+                - "3.9"
               ansible_version:
                 - 2.9.26
                 - 2.10.17
@@ -406,7 +425,6 @@ workflows:
         - << pipeline.parameters.run-policy >>
     jobs:
       - sanity:
-
           matrix:
             parameters:
               py_version:
