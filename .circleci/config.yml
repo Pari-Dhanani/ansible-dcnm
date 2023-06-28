@@ -55,23 +55,6 @@ parameters:
     default: false
 
 jobs:
-  install:
-    working_directory: ~/repo 
-    machine: true
-    resource_class: cisco/ansible-dcnm
-    steps:
-      - checkout
-      - run:
-          name: Download pyenv
-          command: |
-            pwd
-            echo ${HOME}
-            set +e
-            cat ~/.ssh/known_hosts
-            cat ~/.bashrc
-            source ~/.bashrc
-            pip list
-            whoami
   build:
     parameters:      
       ansible_version:
@@ -102,10 +85,18 @@ jobs:
             echo $PYENV_ROOT
             echo "**********************"
             /home/circleci/.pyenv/bin/pyenv local python_3.9
-            /home/circleci/.pyenv/bin/pyenv versions
-            /home/circleci/.pyenv/shims/python --version
-            python3 --version
-            python --version
+            # /home/circleci/.pyenv/bin/pyenv versions
+            # /home/circleci/.pyenv/shims/python --version
+            # python3 --version
+            # python --version
+
+            pip install https://github.com/ansible/ansible/archive/v<< parameters.ansible_version >>.tar.gz --disable-pip-version-check
+            ansible --version
+            pyenv versions
+            ansible-galaxy collection build --force --output-path "${HOME}/.cache/v<< parameters.ansible_version >>/collection-tarballs"
+            pip install pytest==5.4.1
+            pip install coverage==4.5.4
+            pyenv local system
 
   sanity:
     parameters:
@@ -202,10 +193,7 @@ workflows:
   pre:
     when: << pipeline.parameters.run-setup >>
     jobs:
-
       - build:
-          #requires:
-          #  - install
           matrix:
             parameters:
               ansible_version:
