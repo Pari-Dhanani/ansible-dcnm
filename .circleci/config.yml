@@ -140,7 +140,11 @@ jobs:
           
       - run:
           name: Install the collection tarball
-          command: ansible-galaxy collection install --force ${HOME}/.cache/v<< parameters.ansible_version >>/collection-tarballs/*.tar.gz
+          command: |
+            pyenv versions
+            python --version
+            ansible --version  
+            ansible-galaxy collection install --force ${HOME}/.cache/v<< parameters.ansible_version >>/collection-tarballs/*.tar.gz
 
       - run:
           name: Run DCNM Unit tests for << parameters.modulename >>
@@ -149,7 +153,7 @@ jobs:
             coverage run --source=. -m pytest tests/unit/modules/dcnm/test_dcnm_<< parameters.modulename >>.py
 
       - run:
-          name: Run sanity tests py 3.8 for << parameters.modulename >>
+          name: Run sanity tests py << parameters.py_version >> for << parameters.modulename >>
           command: echo done
           # command: ansible-test sanity --python 3.8 -v --color --truncate 0
           # environment:
