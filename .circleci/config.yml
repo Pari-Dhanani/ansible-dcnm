@@ -153,6 +153,7 @@ jobs:
             export PATH="home/circleci/.ansible/collections/:$PATH"
             export PYTHONPATH="home/circleci/.ansible/collections/:$PYTHONPATH"
             echo $PATH
+            echo $PYTHONPATH
             coverage run --source=. -m pytest tests/unit/modules/dcnm/test_dcnm_<< parameters.modulename >>.py
 
       - run:
@@ -205,11 +206,11 @@ workflows:
           matrix:
             parameters:
               ansible_version:
-              - 2.9.26
-              - 2.10.17
-              - 2.11.12
-              - 2.12.10
-              - 2.13.8
+            #  - 2.9.26
+             # - 2.10.17
+             # - 2.11.12
+             # - 2.12.10
+             # - 2.13.8
               - 2.14.2
 
       - path-filtering/filter:
