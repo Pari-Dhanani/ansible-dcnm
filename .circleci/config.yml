@@ -150,8 +150,8 @@ jobs:
           name: Run DCNM Unit tests for << parameters.modulename >>
           command: |
             ls -lrt
-            export PATH="home/circleci/.ansible/collections/:$PATH"
-            export PYTHONPATH="home/circleci/.ansible/collections/:$PYTHONPATH"
+            export PATH="home/circleci/.ansible/collections/ansible_collections/:$PATH"
+            export PYTHONPATH="home/circleci/.ansible/collections/ansible_collections/:$PYTHONPATH"
             echo $PATH
             coverage run --source=. -m pytest tests/unit/modules/dcnm/test_dcnm_<< parameters.modulename >>.py
 
