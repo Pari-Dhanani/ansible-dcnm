@@ -150,6 +150,8 @@ jobs:
           name: Run DCNM Unit tests for << parameters.modulename >>
           command: |
             ls -lrt
+            export PATH="home/circleci/.ansible/collections/:$PATH"
+            echo $PATH
             coverage run --source=. -m pytest tests/unit/modules/dcnm/test_dcnm_<< parameters.modulename >>.py
 
       - run:
@@ -158,15 +160,6 @@ jobs:
           # command: ansible-test sanity --python 3.8 -v --color --truncate 0
           # environment:
           #   PYTHONPATH: /home/circleci/.ansible/collections/
-
-      - run:
-          name: Run sanity tests py 3.9 for << parameters.modulename >>
-          command: |
-            echo done
-            pyenv local system
-          # command: ansible-test sanity --python 3.9 -v --color --truncate 0
-          # environment:
-          #   PYTHONPATH: /home/circleci/.ansible/collections/ansible_collections/cisco/dcnm
 
 
 
