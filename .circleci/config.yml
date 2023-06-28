@@ -117,10 +117,20 @@ jobs:
       - run:
           name: Activating Python << parameters.py_version >> env for << parameters.modulename >>
           command: |
+            export PYENV_ROOT="/home/circleci/.pyenv"
+            export PATH="$PYENV_ROOT/bin:$PATH"
+            export PATH="$PYENV_ROOT/shims/python3:$PATH"
+            export PATH="$PYENV_ROOT/shims/python:$PATH"
+            export PYTHONPATH="$PYENV_ROOT/shims/python3:$PYTHONPATH"
+            export PYTHONPATH="$PYENV_ROOT/shims/python:$PYTHONPATH"
+
+            export PATH="/home/circleci/.ansible/collections/:$PATH"
+            export PYTHONPATH="/home/circleci/.ansible/collections/:$PYTHONPATH"
+
             pyenv local python_<< parameters.py_version >>
-            pyenv local 
+
           environment:
-            PYTHONPATH: /root/.ansible/collections/:$PYTHONPATH
+            PYTHONPATH: /home/circleci/.ansible/collections/:$PYTHONPATH
 
 
       - run:
