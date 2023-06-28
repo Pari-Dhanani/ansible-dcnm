@@ -151,6 +151,7 @@ jobs:
           command: |
             ls -lrt
             export PATH="home/circleci/.ansible/collections/:$PATH"
+            export PYTHONPATH="home/circleci/.ansible/collections/:$PYTHONPATH"
             echo $PATH
             coverage run --source=. -m pytest tests/unit/modules/dcnm/test_dcnm_<< parameters.modulename >>.py
 
