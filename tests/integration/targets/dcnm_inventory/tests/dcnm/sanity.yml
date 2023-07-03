@@ -5,25 +5,30 @@
 - set_fact:
     rest_path: "/rest/control/fabrics/{{ ansible_it_fabric }}"
   when: controller_version == "11"
+  tags: sanity
 
 - set_fact:
     rest_path: "/appcenter/cisco/ndfc/api/v1/lan-fabric/rest/control/fabrics/{{ ansible_it_fabric }}"
   when: controller_version >= "12"
+  tags: sanity
 
 - name: MERGED - Verify if fabric is deployed.
   cisco.dcnm.dcnm_rest:
     method: GET
     path: "{{ rest_path }}"
   register: result
+  tags: sanity
 
 - assert:
     that:
     - 'result.response.DATA != None'
+  tags: sanity
 
 - name: MERGED - setup - Clean up any existing devices
   cisco.dcnm.dcnm_inventory:
     fabric: "{{ ansible_it_fabric }}"
     state: deleted
+  tags: sanity
 
 ##############################################
 ##                MERGED                    ##
@@ -43,29 +48,35 @@
                        # Super Spine, Border Super Spine, Border Gateway Super Spine]
       preserve_config: False # boolean, default is  true
   register: result
+  tags: sanity
 
 - assert:
     that:
     - 'result.changed == true'
+  tags: sanity
 
 - assert:
     that:
       - 'item["RETURN_CODE"] == 200'
   loop: '{{ result.response }}'
+  tags: sanity
 
 - name: MERGED - conf1 - GF - Idempotence
   cisco.dcnm.dcnm_inventory: *conf
   register: result
+  tags: sanity
 
 - assert:
     that:
     - 'result.changed == false'
     - 'result.response == "The switch provided is already part of the fabric and cannot be created again"'
+  tags: sanity  
 
 - name: MERGED - setup - Clean up any existing devices
   cisco.dcnm.dcnm_inventory:
     fabric: "{{ ansible_it_fabric }}"
     state: deleted
+  tags: sanity
 
 
 ##############################################
@@ -84,24 +95,29 @@
       max_hops: 0
       preserve_config: False # boolean, default is  true
   register: result
+  tags: sanity
 
 - assert:
     that:
     - 'result.changed == true'
+  tags: sanity  
 
 - assert:
     that:
       - 'item["RETURN_CODE"] == 200'
   loop: '{{ result.response }}'
+  tags: sanity
 
 - name: OVERRIDDEN - conf1 - OV - Idempotence
   cisco.dcnm.dcnm_inventory: *conf_over
   register: result
+  tags: sanity
 
 - assert:
     that:
     - 'result.changed == false'
     - 'result.response == "The switch provided is already part of the fabric and there is no more device to delete in the fabric"'
+  tags: sanity
 
 ##############################################
 ##                 CLEAN-UP                 ##
@@ -111,7 +127,7 @@
   cisco.dcnm.dcnm_inventory:
     fabric: "{{ ansible_it_fabric }}"
     state: deleted
-
+  tags: sanity
 ##############################################
 ##                 QUERY                    ##
 ##############################################
@@ -131,15 +147,18 @@
                        # Super Spine, Border Super Spine, Border Gateway Super Spine]
       preserve_config: False # boolean, default is  true
   register: result
+  tags: sanity
 
 - assert:
     that:
     - 'result.changed == true'
+  tags: sanity  
 
 - assert:
     that:
       - 'item["RETURN_CODE"] == 200'
   loop: '{{ result.response }}'
+  tags: sanity
 
 
 #############################################
@@ -155,14 +174,17 @@
       role: leaf # default is Leaf - choose from [Leaf, Spine, Border, Border Spine, Border Gateway, Border Gateway Spine
                        # Super Spine, Border Super Spine, Border Gateway Super Spine]
   register: result
+  tags: sanity
 
 - assert:
     that:
     - 'result.response[0].ipAddress == "{{ ansible_switch1 }}"'
     - 'result.response[0].switchRole == "leaf"'
+  tags: sanity  
 
 - name: QUERY - cleanup - Clean up any existing devices
   cisco.dcnm.dcnm_inventory:
     fabric: "{{ ansible_it_fabric }}"
     state: deleted
+  tags: sanity  
 
