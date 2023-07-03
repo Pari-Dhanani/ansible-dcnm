@@ -17,8 +17,8 @@
 - assert:
     that:
       - 'item["RETURN_CODE"] == 200'
-    tags: sanity
   loop: '{{ result.response }}'
+  tags: sanity
 
 - block:
 
