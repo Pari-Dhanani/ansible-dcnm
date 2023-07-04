@@ -226,14 +226,25 @@
           - '(result["diff"][0]["query"] | length) == 0'
 
 
+##############################################
+##                CLEANUP                   ##
+##############################################
 
+- name: Initialize the setup
+  cisco.dcnm.dcnm_template:
+    state: deleted       # only choose form [merged, deleted, query]
+    config:
+      - name: template_101
+      - name: template_102
+      - name: template_103
+      - name: template_104
 
 ##############################################
 ##               NO DELETE                  ##
 ##############################################
 
     - name: Create a template
-      cisco.dcnm.dcnm_template: &temp_merge
+      cisco.dcnm.dcnm_template: &temp_merge2
         state: merged        # only choose form [merged, deleted, query]
         config:
           - name: template_101
