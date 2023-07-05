@@ -155,7 +155,7 @@ jobs:
             export PYTHONPATH="/home/circleci/.ansible/collections/:$PYTHONPATH"
             echo $PATH
             echo $PYTHONPATH
-            coverage run --source=. -m pytest tests/unit/modules/dcnm/test_dcnm_<< parameters.modulename >>.py
+            coverage run --source=. -m pytest tests/unit/modules/dcnm/test_dcnm_<< parameters.modulename >>.py -vvvv
 
       - run:
           name: Run sanity tests py << parameters.py_version >> for << parameters.modulename >>
@@ -213,7 +213,7 @@ jobs:
           command: |
             export PATH="/home/circleci/.ansible/collections/:$PATH"
             export PYTHONPATH="/home/circleci/.ansible/collections/:$PYTHONPATH"
-            coverage run --source=. -m pytest tests/unit/modules/dcnm/.
+            coverage run --source=. -m pytest tests/unit/modules/dcnm/. -vvvv
 
 
 workflows:
@@ -500,7 +500,7 @@ workflows:
                 - "3.8"
                 - "3.9"
               modulename:
-                - service_policy_job
+                - service_policy
               ansible_version:
                 - 2.9.26
                 - 2.10.17
