@@ -169,10 +169,14 @@ jobs:
             export PATH="/home/circleci/.ansible/collections/:$PATH"
             export PYTHONPATH="/home/circleci/.ansible/collections/:$PYTHONPATH"
 
+            export ANSIBLE_ROLES_PATH=/home/circleci/repo/tests/integration/targets
+
             pyenv local python_<< parameters.py_version >>
      
 
             cat dcnm_roles.yaml
+            
+            
 
             # ansible-test sanity --docker --python << parameters.py_version >> -v --color --truncate 0
 
@@ -230,6 +234,7 @@ jobs:
 
             export PATH="/home/circleci/.ansible/collections/:$PATH"
             export PYTHONPATH="/home/circleci/.ansible/collections/:$PYTHONPATH"
+            
 
             pyenv local python_<< parameters.py_version >>
 
