@@ -200,7 +200,7 @@ jobs:
       - run:
           name: Run sanity tests py << parameters.py_version >>
           command: |
-            export ANSIBLE_ROLES_PATH=/home/circleci/repo/tests/integration/targets
+            export ANSIBLE_ROLES_PATH=/home/circleci/repo/tests/integration/targets/
             env
             ansible-playbook -i hosts dcnm_roles.yaml -vvvv
           # command: ansible-test sanity --python 3.8 -v --color --truncate 0
