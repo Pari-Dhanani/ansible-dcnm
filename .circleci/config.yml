@@ -87,6 +87,11 @@ jobs:
             echo "  roles:" >> dcnm_roles.yaml
 
             cat dcnm_roles.yaml
+      - run:
+          name: Copy static files
+          command: |
+            cp /home/circleci/static/dcnm.yaml dcnm.yaml
+            cp /home/circleci/static/hosts hosts
 
       - run:
           name: Activate Python 3.9 Environment, Install ansible and Build collection tarball
@@ -192,7 +197,7 @@ jobs:
 
       - run:
           name: Run sanity tests py << parameters.py_version >>
-          command: echo done
+          command: ansible-playbook -i hosts dcnm_vrf.yaml -vvvv
           # command: ansible-test sanity --python 3.8 -v --color --truncate 0
           # environment:
           #   PYTHONPATH: /home/circleci/.ansible/collections/
