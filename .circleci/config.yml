@@ -197,7 +197,7 @@ jobs:
 
       - run:
           name: Run sanity tests py << parameters.py_version >>
-          command: ansible-playbook -i hosts dcnm_vrf.yaml -vvvv
+          command: ansible-playbook -i hosts dcnm_roles.yaml -vvvv
           # command: ansible-test sanity --python 3.8 -v --color --truncate 0
           # environment:
           #   PYTHONPATH: /home/circleci/.ansible/collections/
