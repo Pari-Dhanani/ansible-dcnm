@@ -76,14 +76,14 @@ jobs:
             export PATH="$PYENV_ROOT/shims/python:$PATH"
             export PYTHONPATH="$PYENV_ROOT/shims/python3:$PYTHONPATH"
             export PYTHONPATH="$PYENV_ROOT/shims/python:$PYTHONPATH"
-            echo "**********************"
-            whoami
-            echo "**********************"
-            echo $PYTHONPATH
-            echo $PATH
-            echo $HOME
-            echo $PYENV_ROOT
-            echo "**********************"
+              #echo "**********************"
+            # whoami
+            # echo "**********************"
+            # echo $PYTHONPATH
+            # echo $PATH
+            # echo $HOME
+            # echo $PYENV_ROOT
+            # echo "**********************"
             /home/circleci/.pyenv/bin/pyenv local python_3.9
             # /home/circleci/.pyenv/bin/pyenv versions
             # /home/circleci/.pyenv/shims/python --version
@@ -126,8 +126,25 @@ jobs:
 
             export PATH="/home/circleci/.ansible/collections/:$PATH"
             export PYTHONPATH="/home/circleci/.ansible/collections/:$PYTHONPATH"
-
+            export MODULENAME="<< parameters.modulename >>"
             pyenv local python_<< parameters.py_version >>
+            
+            echo "---" > dcnm_roles.yaml
+            echo "- hosts: dcnm" >> dcnm_roles.yaml
+            echo "  gather_facts: no" >> dcnm_roles.yaml
+            echo "  connection: ansible.netcommon.httpapi" >> dcnm_roles.yaml
+            echo "  " >> dcnm_roles.yaml
+            echo "  tasks:" >> dcnm_roles.yaml
+            echo "  " >> dcnm_roles.yaml
+            echo "  vars:" >> dcnm_roles.yaml
+            echo "    debug: false" >> dcnm_roles.yaml
+            echo "  " >> dcnm_roles.yaml
+            echo "  roles:" >> dcnm_roles.yaml
+            echo "    - dcnm_$MODULENAME" >> dcnm_roles.yaml
+
+            cat dcnm_roles.yaml
+
+            # ansible-test sanity --docker --python << parameters.py_version >> -v --color --truncate 0
 
           environment:
             PYTHONPATH: /home/circleci/.ansible/collections/:$PYTHONPATH
