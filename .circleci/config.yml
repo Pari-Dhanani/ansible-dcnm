@@ -54,6 +54,7 @@ parameters:
     type: boolean
     default: false
 
+
 jobs:
   build:
     parameters:      
@@ -66,6 +67,23 @@ jobs:
 
     steps:
       - checkout
+
+      - run:
+          name: Create Roles File header
+          command: |
+            echo "---" > dcnm_roles.yaml
+            echo "- hosts: dcnm" >> dcnm_roles.yaml
+            echo "  gather_facts: no" >> dcnm_roles.yaml
+            echo "  connection: ansible.netcommon.httpapi" >> dcnm_roles.yaml
+            echo "  " >> dcnm_roles.yaml
+            echo "  tasks:" >> dcnm_roles.yaml
+            echo "  " >> dcnm_roles.yaml
+            echo "  vars:" >> dcnm_roles.yaml
+            echo "    debug: false" >> dcnm_roles.yaml
+            echo "  " >> dcnm_roles.yaml
+            echo "  roles:" >> dcnm_roles.yaml
+
+            cat dcnm_roles.yaml
 
       - run:
           name: Activate Python 3.9 Environment, Install ansible and Build collection tarball
@@ -98,11 +116,27 @@ jobs:
             pip install coverage==4.5.4
             pyenv local system
 
-  sanity:
+  addrole:
+    parameters:
+      modulename:
+        type: string
+
+    working_directory: ~/repo
+    machine: true
+    resource_class: cisco/ansible-dcnm
+
+    steps:
+      - checkout
+
+      - run:
+          name: Adding role- << parameters.modulename >>
+          command: |
+            export MODULENAME="<< parameters.modulename >>"
+            echo "    - dcnm_$MODULENAME" >> dcnm_roles.yaml
+
+  sanity-tests:
     parameters:
       ansible_version:
-        type: string
-      modulename:
         type: string
       py_version:
         type: string
@@ -115,7 +149,7 @@ jobs:
       - checkout
 
       - run:
-          name: Activating Python << parameters.py_version >> env for << parameters.modulename >>
+          name: Activating Python << parameters.py_version >> env
           command: |
             export PYENV_ROOT="/home/circleci/.pyenv"
             export PATH="$PYENV_ROOT/bin:$PATH"
@@ -126,21 +160,9 @@ jobs:
 
             export PATH="/home/circleci/.ansible/collections/:$PATH"
             export PYTHONPATH="/home/circleci/.ansible/collections/:$PYTHONPATH"
-            export MODULENAME="<< parameters.modulename >>"
+
             pyenv local python_<< parameters.py_version >>
-            
-            echo "---" > dcnm_roles.yaml
-            echo "- hosts: dcnm" >> dcnm_roles.yaml
-            echo "  gather_facts: no" >> dcnm_roles.yaml
-            echo "  connection: ansible.netcommon.httpapi" >> dcnm_roles.yaml
-            echo "  " >> dcnm_roles.yaml
-            echo "  tasks:" >> dcnm_roles.yaml
-            echo "  " >> dcnm_roles.yaml
-            echo "  vars:" >> dcnm_roles.yaml
-            echo "    debug: false" >> dcnm_roles.yaml
-            echo "  " >> dcnm_roles.yaml
-            echo "  roles:" >> dcnm_roles.yaml
-            echo "    - dcnm_$MODULENAME" >> dcnm_roles.yaml
+     
 
             cat dcnm_roles.yaml
 
@@ -163,19 +185,10 @@ jobs:
             ansible --version  
             ansible-galaxy collection install --force ${HOME}/.cache/v<< parameters.ansible_version >>/collection-tarballs/*.tar.gz
 
-      - run:
-          name: Run DCNM Unit tests for << parameters.modulename >>
-          # cd /home/circleci/.ansible/collections/ansible_collections/cisco/dcnm
-          command: |
-            ls -lrt
-            export PATH="/home/circleci/.ansible/collections/:$PATH"
-            export PYTHONPATH="/home/circleci/.ansible/collections/:$PYTHONPATH"
-            echo $PATH
-            echo $PYTHONPATH
-            coverage run --source=. -m pytest tests/unit/modules/dcnm/test_dcnm_<< parameters.modulename >>.py -vvvv
+
 
       - run:
-          name: Run sanity tests py << parameters.py_version >> for << parameters.modulename >>
+          name: Run sanity tests py << parameters.py_version >>
           command: echo done
           # command: ansible-test sanity --python 3.8 -v --color --truncate 0
           # environment:
@@ -329,133 +342,72 @@ workflows:
         - << pipeline.parameters.run-all >>
         - << pipeline.parameters.run-interface >>
     jobs:
-      - sanity:
-
+      - addrole:
           matrix:
             parameters:
-              py_version:
-                - "3.8"
-                - "3.9"
               modulename:
                 - interface
-              ansible_version:
-                - 2.9.26
-                - 2.10.17
-                - 2.11.12
-                - 2.12.10
-                - 2.13.8
-              #  - 2.14.2
-      # - interface_job
+
   inventory:
     when: 
       or:
         - << pipeline.parameters.run-all >>
         - << pipeline.parameters.run-inventory >>
     jobs:
-      - sanity:
-
+      - addrole:
           matrix:
             parameters:
-              py_version:
-                - "3.8"
-                - "3.9"
               modulename:
                 - inventory
-              ansible_version:
-                - 2.9.26
-                - 2.10.17
-                - 2.11.12
-                - 2.12.10
-                - 2.13.8
-              #  - 2.14.2
-      # - inventory_job
+
   vrf:
     when:
       or:
         - << pipeline.parameters.run-all >>
         - << pipeline.parameters.run-vrf >>
     jobs:
-      - sanity:
-
+      - addrole:
           matrix:
             parameters:
-              py_version:
-                - "3.8"
-                - "3.9"
               modulename:
                 - vrf
-              ansible_version:
-                - 2.9.26
-                - 2.10.17
-                - 2.11.12
-                - 2.12.10
-                - 2.13.8
-              #  - 2.14.2
+
   links:
     when:
       or:
         - << pipeline.parameters.run-all >>
         - << pipeline.parameters.run-links >>
     jobs:
-      - sanity:
+      - addrole:
 
           matrix:
             parameters:
-              py_version:
-                - "3.8"
-                - "3.9"
               modulename:
                 - links
-              ansible_version:
-                - 2.9.26
-                - 2.10.17
-                - 2.11.12
-                - 2.12.10
-                - 2.13.8
-              #  - 2.14.2
+
   network:
     when:
       or:
         - << pipeline.parameters.run-all >>
         - << pipeline.parameters.run-network >>
     jobs:
-      - sanity:
-
+      - addrole:
           matrix:
             parameters:
-              py_version:
-                - "3.8"
-                - "3.9"
               modulename:
                 - network
-              ansible_version:
-                - 2.9.26
-                - 2.10.17
-                - 2.11.12
-                - 2.12.10
-                - 2.13.8
-              #  - 2.14.2
+
   policy:
     when:
       or:
         - << pipeline.parameters.run-all >>
         - << pipeline.parameters.run-policy >>
     jobs:
-      - sanity:
+      - addrole:
           matrix:
             parameters:
-              py_version:
-                - "3.8"
-                - "3.9"
               modulename:
                 - policy
-              ansible_version:
-                - 2.9.26
-                - 2.10.17
-                - 2.11.12
-                - 2.12.10
-                - 2.13.8
-              #  - 2.14.2
 
   resource_manager:
     when:
@@ -463,22 +415,11 @@ workflows:
         - << pipeline.parameters.run-all >>
         - << pipeline.parameters.run-resource_manager >>
     jobs:
-      - sanity:
-
+      - addrole:
           matrix:
             parameters:
-              py_version:
-                - "3.8"
-                - "3.9"
               modulename:
                 - resource_manager
-              ansible_version:
-                - 2.9.26
-                - 2.10.17
-                - 2.11.12
-                - 2.12.10
-                - 2.13.8
-              #  - 2.14.2
 
   service_node:
     when:
@@ -486,22 +427,13 @@ workflows:
         - << pipeline.parameters.run-all >>
         - << pipeline.parameters.run-service_node >>
     jobs:
-      - sanity:
+      - addrole:
 
           matrix:
             parameters:
-              py_version:
-                - "3.8"
-                - "3.9"
               modulename:
                 - service_node
-              ansible_version:
-                - 2.9.26
-                - 2.10.17
-                - 2.11.12
-                - 2.12.10
-                - 2.13.8
-              #  - 2.14.2
+
 
   service_policy:
     when:
@@ -509,22 +441,13 @@ workflows:
         - << pipeline.parameters.run-all >>
         - << pipeline.parameters.run-service_policy >>
     jobs:
-      - sanity:
+      - addrole:
 
           matrix:
             parameters:
-              py_version:
-                - "3.8"
-                - "3.9"
               modulename:
                 - service_policy
-              ansible_version:
-                - 2.9.26
-                - 2.10.17
-                - 2.11.12
-                - 2.12.10
-                - 2.13.8
-              #  - 2.14.2
+
       
 
   service_route_peering:
@@ -533,22 +456,12 @@ workflows:
         - << pipeline.parameters.run-all >>
         - << pipeline.parameters.run-service_route_peering >>
     jobs:
-      - sanity:
+      - addrole:
 
           matrix:
             parameters:
-              py_version:
-                - "3.8"
-                - "3.9"
               modulename:
                 - service_route_peering
-              ansible_version:
-                - 2.9.26
-                - 2.10.17
-                - 2.11.12
-                - 2.12.10
-                - 2.13.8
-              #  - 2.14.2
 
   template:
     when:
@@ -556,22 +469,12 @@ workflows:
         - << pipeline.parameters.run-all >>
         - << pipeline.parameters.run-template >>
     jobs:
-      - sanity:
+      - addrole:
 
           matrix:
             parameters:
-              py_version:
-                - "3.8"
-                - "3.9"
               modulename:
                 - template
-              ansible_version:
-                - 2.9.26
-                - 2.10.17
-                - 2.11.12
-                - 2.12.10
-                - 2.13.8
-              #  - 2.14.2
 
   rest:
     when: 
@@ -579,15 +482,22 @@ workflows:
         - << pipeline.parameters.run-all >>
         - << pipeline.parameters.run-rest >>
     jobs:
-      - sanity:
+      - addrole:
 
+          matrix:
+            parameters:
+              modulename:
+                - rest
+
+
+  sanity:
+    jobs:
+      - sanity-tests:
           matrix:
             parameters:
               py_version:
                 - "3.8"
                 - "3.9"
-              modulename:
-                - rest
               ansible_version:
                 - 2.9.26
                 - 2.10.17
@@ -595,6 +505,5 @@ workflows:
                 - 2.12.10
                 - 2.13.8
               #  - 2.14.2
-
 
 
