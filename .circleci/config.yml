@@ -53,6 +53,9 @@ parameters:
   run-all:
     type: boolean
     default: false
+  run-any:
+    type: boolean
+    default: false
 
 
 jobs:
@@ -271,6 +274,7 @@ workflows:
           # 3-column space-separated table for mapping; `path-to-test parameter-to-set value-for-parameter` for each row
           mapping: |
             .* run-setup false
+            .* run-any true
             plugins/httpapi/.* run-all true
             plugins/module_utils/.* run-all true
             plugins/action/dcnm_interface.py run-interface true
@@ -491,6 +495,7 @@ workflows:
 
 
   sanity:
+    when: << pipeline.parameters.run-any >>
     jobs:
       - sanity-tests:
           matrix:
