@@ -262,10 +262,10 @@ workflows:
           matrix:
             parameters:
               ansible_version:
-              - 2.9.26
-              - 2.10.17
-              - 2.11.12
-              - 2.12.10
+            #  - 2.9.26
+            #  - 2.10.17
+            #  - 2.11.12
+            #  - 2.12.10
               - 2.13.8
             #  - 2.14.2
 
@@ -333,41 +333,16 @@ workflows:
           matrix:
             parameters:
               py_version:
-                - "3.8"
+              #  - "3.8"
                 - "3.9"
               ansible_version:
-                - 2.9.26
-                - 2.10.17
-                - 2.11.12
-                - 2.12.10
+              #  - 2.9.26
+              #  - 2.10.17
+              #  - 2.11.12
+              #  - 2.12.10
                 - 2.13.8
               #  - 2.14.2
 
-
-
-  interface:
-    when: 
-      or:
-        - << pipeline.parameters.run-all >>
-        - << pipeline.parameters.run-interface >>
-    jobs:
-      - addrole:
-          matrix:
-            parameters:
-              modulename:
-                - interface
-
-  inventory:
-    when: 
-      or:
-        - << pipeline.parameters.run-all >>
-        - << pipeline.parameters.run-inventory >>
-    jobs:
-      - addrole:
-          matrix:
-            parameters:
-              modulename:
-                - inventory
 
   vrf:
     when:
@@ -405,6 +380,31 @@ workflows:
             parameters:
               modulename:
                 - network
+
+
+  interface:
+    when: 
+      or:
+        - << pipeline.parameters.run-all >>
+        - << pipeline.parameters.run-interface >>
+    jobs:
+      - addrole:
+          matrix:
+            parameters:
+              modulename:
+                - interface
+
+  inventory:
+    when: 
+      or:
+        - << pipeline.parameters.run-all >>
+        - << pipeline.parameters.run-inventory >>
+    jobs:
+      - addrole:
+          matrix:
+            parameters:
+              modulename:
+                - inventory
 
   policy:
     when:
@@ -506,13 +506,13 @@ workflows:
           matrix:
             parameters:
               py_version:
-                - "3.8"
+              #  - "3.8"
                 - "3.9"
               ansible_version:
-                - 2.9.26
-                - 2.10.17
-                - 2.11.12
-                - 2.12.10
+              #  - 2.9.26
+              #  - 2.10.17
+              #  - 2.11.12
+              #  - 2.12.10
                 - 2.13.8
               #  - 2.14.2
 
