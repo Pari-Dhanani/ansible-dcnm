@@ -100,7 +100,7 @@
 ###############################################
 
 - name: REPLACED - Replace Service Node with form factor physical
-  cisco.dcnm.dcnm_service_node: &conf
+  cisco.dcnm.dcnm_service_node: &conf1
     fabric: "{{ ansible_it_fabric }}"
     service_fabric: "{{ ansible_ext_fabric }}"
     state: replaced
@@ -135,8 +135,8 @@
     timeout: 40
   tags: sanity
 
-- name: REPLACED - conf - Idempotence
-  cisco.dcnm.dcnm_service_node: *conf
+- name: REPLACED - conf1 - Idempotence
+  cisco.dcnm.dcnm_service_node: *conf1
   register: result
   tags: sanity
 
@@ -214,7 +214,7 @@
 ###############################################
 
 - name: OVERRIDDEN - Update service node - delete and create
-  cisco.dcnm.dcnm_service_node: &conf
+  cisco.dcnm.dcnm_service_node: &conf2
     fabric: "{{ ansible_it_fabric }}"
     service_fabric: "{{ ansible_ext_fabric }}"
     state: overridden
@@ -252,7 +252,7 @@
   tags: sanity  
 
 - name: OVERRIDDEN - conf - Idempotence
-  cisco.dcnm.dcnm_service_node: *conf
+  cisco.dcnm.dcnm_service_node: *conf2
   register: result
   tags: sanity
 
