@@ -342,7 +342,7 @@ workflows:
             parameters:
               py_version:
               #  - "3.8"
-                - "3.9"
+                - "3.11"
               ansible_version:
               #  - 2.9.26
               #  - 2.10.17
@@ -515,7 +515,7 @@ workflows:
             parameters:
               py_version:
               #  - "3.8"
-                - "3.9"
+                - "3.11"
               ansible_version:
               #  - 2.9.26
               #  - 2.10.17
