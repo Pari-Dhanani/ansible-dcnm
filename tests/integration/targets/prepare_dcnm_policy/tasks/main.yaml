@@ -59,7 +59,6 @@
 ##############################################
 
     - name: Create templates
-      tags: sanity
       cisco.dcnm.dcnm_template: &temp_merge
         state: merged        # only choose form [merged, deleted, query]
         config:
@@ -148,6 +147,8 @@
                   dst-grp 5
                   snsr-grp 5 sample-interval 50000
       register: result
+      tags: sanity
+      
     - assert:
         that:
           - 'result.changed == true'
