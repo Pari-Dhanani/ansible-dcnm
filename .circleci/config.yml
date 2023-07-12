@@ -90,7 +90,7 @@ jobs:
       - run:
           name: Copy static files
           command: |
-            mkdir group_vars
+           
             cp /home/circleci/static/dcnm.yaml group_vars/dcnm.yaml
             cp /home/circleci/static/hosts hosts
 
