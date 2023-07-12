@@ -1,2 +1,3 @@
 ---
 - { include: dcnm.yaml, tags: ['dcnm','sanity'] }
+  tags: sanity 
