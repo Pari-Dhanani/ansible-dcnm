@@ -4,7 +4,7 @@
 
 - name: Remove local log file
   local_action: command rm -f sp.log
-  tags: sanity
+  #tags: sanity
 
 - name: Delete service policies
   cisco.dcnm.dcnm_service_policy: &dcnm_sp_del_all
@@ -27,16 +27,16 @@
       - name: service_policy_5                            # mandatory
         node_name: "{{ ansible_snode_2 }}"                # mandatory
   register: result
-  tags: sanity
+  #tags: sanity
 
 - assert:
     that:
         - 'item["RETURN_CODE"] == 200'
   loop: '{{ result.response }}'
-  tags: sanity
+  #tags: sanity
 
-- tags: sanity
-  block:
+  #tags: sanity
+- block:
 
 ##############################################
 ##                MERGE                     ##
