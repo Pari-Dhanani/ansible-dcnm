@@ -28,9 +28,9 @@ parameters:
   run-resource_manager:
     type: boolean
     default: false
-  run-rest:
-    type: boolean
-    default: false
+#  run-rest:
+#    type: boolean
+#    default: false
   run-service_node:
     type: boolean
     default: false
@@ -492,18 +492,18 @@ workflows:
               modulename:
                 - template
 
-  rest:
-    when: 
-      or:
-        - << pipeline.parameters.run-all >>
-        - << pipeline.parameters.run-rest >>
-    jobs:
-      - addrole:
-
-          matrix:
-            parameters:
-              modulename:
-                - rest
+#  rest:
+#    when: 
+#      or:
+#        - << pipeline.parameters.run-all >>
+#        - << pipeline.parameters.run-rest >>
+#    jobs:
+#      - addrole:
+#
+#          matrix:
+#            parameters:
+#              modulename:
+#                - rest
 
 
   sanity:
