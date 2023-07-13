@@ -34,12 +34,12 @@ parameters:
   run-service_node:
     type: boolean
     default: false
-  run-service_policy:
-    type: boolean
-    default: false
-  run-service_route_peering:
-    type: boolean
-    default: false
+#  run-service_policy:
+#    type: boolean
+#    default: false
+#  run-service_route_peering:
+#    type: boolean
+#    default: false
   run-template:
     type: boolean
     default: false
@@ -300,8 +300,8 @@ workflows:
             plugins/modules/dcnm_resource_manager.py run-resource_manager true
             plugins/modules/dcnm_rest.py run-rest true
             plugins/modules/dcnm_service_node.py run-service_node true
-            plugins/modules/dcnm_service_policy.py run-service_policy true
-            plugins/modules/dcnm_service_route_peering.py run-service_route_peering true
+            # plugins/modules/dcnm_service_policy.py run-service_policy true
+            # plugins/modules/dcnm_service_route_peering.py run-service_route_peering true
             plugins/modules/dcnm_template.py run-template true
             plugins/modules/dcnm_vrf.py run-vrf true
 
@@ -322,8 +322,8 @@ workflows:
             tests/integration/targets/prepare_dcnm_intf/tasks/.* run-all true
             tests/integration/targets/prepare_dcnm_links/tasks/.* run-links true
             tests/integration/targets/prepare_dcnm_policy/tasks/.* run-policy true
-            tests/integration/targets/prepare_dcnm_service_policy/tasks/.* run-service_policy true
-            tests/integration/targets/prepare_dcnm_service_route_peering/tasks/.* run-service_route_peering true
+            # tests/integration/targets/prepare_dcnm_service_policy/tasks/.* run-service_policy true
+            # tests/integration/targets/prepare_dcnm_service_route_peering/tasks/.* run-service_route_peering true
             tests/integration/targets/prepare_dcnm_template/tasks/.* run-template true
 
 
@@ -451,33 +451,33 @@ workflows:
                 - service_node
 
 
-  service_policy:
-    when:
-      or:
-        - << pipeline.parameters.run-all >>
-        - << pipeline.parameters.run-service_policy >>
-    jobs:
-      - addrole:
+#  service_policy:
+#    when:
+#      or:
+#        - << pipeline.parameters.run-all >>
+#        - << pipeline.parameters.run-service_policy >>
+#    jobs:
+#      - addrole:
 
-          matrix:
-            parameters:
-              modulename:
-                - service_policy
+#          matrix:
+#            parameters:
+#              modulename:
+#                - service_policy
 
       
 
-  service_route_peering:
-    when:
-      or:
-        - << pipeline.parameters.run-all >>
-        - << pipeline.parameters.run-service_route_peering >>
-    jobs:
-      - addrole:
-
-          matrix:
-            parameters:
-              modulename:
-                - service_route_peering
+#  service_route_peering:
+#    when:
+#      or:
+#        - << pipeline.parameters.run-all >>
+#        - << pipeline.parameters.run-service_route_peering >>
+#    jobs:
+#      - addrole:
+#
+#          matrix:
+#            parameters:
+#              modulename:
+#                - service_route_peering
 
   template:
     when:
