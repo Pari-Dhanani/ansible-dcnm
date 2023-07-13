@@ -278,7 +278,7 @@
 ##############################################
 
     - name: Create ethernet interfaces
-      cisco.dcnm.dcnm_interface: &eth_merge
+      cisco.dcnm.dcnm_interface: &eth_merge2
         check_deploy: True
         fabric: "{{ ansible_it_fabric }}" 
         state: merged                         # only choose form [merged, replaced, deleted, overridden, query]
