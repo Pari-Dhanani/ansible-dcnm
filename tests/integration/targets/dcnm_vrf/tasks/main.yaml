@@ -16,6 +16,7 @@
     controller_version: "{{ result.response['DATA']['version'][0:2] | int }}"
   when: ( result.response['DATA']['version'] is search("\d\d.\d+") )
   ignore_errors: yes
+  tags: sanity
 
 - name: Determine version of DCNM or NDFC
   cisco.dcnm.dcnm_rest:
@@ -37,4 +38,4 @@
     - 'controller_version != "Unable to determine controller version"'
   tags: sanity  
 
-- { include: dcnm.yaml, tags: ['dcnm','sanity'] }
+- { include: dcnm.yaml, tags: ['dcnm'] }
