@@ -72,4 +72,4 @@
       deploy: true
   tags: sanity    
 
-- { include_tasks: dcnm.yaml, tags: ['dcnm','sanity'] }
+- { include_tasks: dcnm.yaml, tags: ['dcnm'] }
