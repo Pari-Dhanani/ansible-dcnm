@@ -201,6 +201,8 @@ jobs:
           name: Run sanity tests py << parameters.py_version >>
           command: |
             export ANSIBLE_ROLES_PATH=/home/circleci/repo/tests/integration/targets/
+            export ANSIBLE_PERSISTENT_CONNECT_TIMEOUT=1000
+            export ANSIBLE_PERSISTENT_COMMAND_TIMEOUT=1000
             env
             ansible-playbook -i hosts dcnm_roles.yaml --tags sanity -vvvv
           # command: ansible-test sanity --python 3.8 -v --color --truncate 0
