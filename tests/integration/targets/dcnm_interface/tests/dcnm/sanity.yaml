@@ -383,7 +383,7 @@
 ##############################################
 
     - name: Replace ethernet interfaces
-      cisco.dcnm.dcnm_interface: &eth_replace
+      cisco.dcnm.dcnm_interface: &eth_replace2
         check_deploy: True
         fabric: "{{ ansible_it_fabric }}" 
         state: replaced                       # only choose form [merged, replaced, deleted, overridden, query]
@@ -476,7 +476,7 @@
       loop: '{{ result.response }}'
 
     - name: Replace ethernet interfaces - Idempotence
-      cisco.dcnm.dcnm_interface: *eth_replace
+      cisco.dcnm.dcnm_interface: *eth_replace2
       register: result
 
     - assert:
