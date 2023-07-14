@@ -111,6 +111,10 @@
           - '"Template Created" in item["DATA"]["status"]'
       loop: '{{ result.response }}'
 
+    - name: Cleanup - sleep for 100 seconds for DCNM to completely update the state
+      wait_for:
+        timeout: 100
+
     - name: Create templates again - Idempotence
       cisco.dcnm.dcnm_template: *temp_merge
       register: result
@@ -347,7 +351,7 @@
 ##############################################
 
     - name: Create templates
-      cisco.dcnm.dcnm_template: &temp_merge
+      cisco.dcnm.dcnm_template: &temp_merge3
         state: merged        # only choose form [merged, deleted, query]
         config:
           - name: test_fail
@@ -393,7 +397,7 @@
 
 
     - name: Create templates
-      cisco.dcnm.dcnm_template: &temp_merge
+      cisco.dcnm.dcnm_template: &temp_merge4x`
         state: replaced        # only choose form [merged, deleted, query]
         config:
           - name: template_101
