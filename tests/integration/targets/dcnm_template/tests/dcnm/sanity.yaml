@@ -230,14 +230,14 @@
 ##                CLEANUP                   ##
 ##############################################
 
-- name: Initialize the setup
-  cisco.dcnm.dcnm_template:
-    state: deleted       # only choose form [merged, deleted, query]
-    config:
-      - name: template_101
-      - name: template_102
-      - name: template_103
-      - name: template_104
+    - name: Initialize the setup
+      cisco.dcnm.dcnm_template:
+        state: deleted       # only choose form [merged, deleted, query]
+        config:
+          - name: template_101
+          - name: template_102
+          - name: template_103
+          - name: template_104
 
 ##############################################
 ##               NO DELETE                  ##
