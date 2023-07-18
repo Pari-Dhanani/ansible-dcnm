@@ -1,7 +1,7 @@
 ---
 namespace: cisco
 name: dcnm
-version: 3.3.0
+version: x.y.z
 readme: README.md
 authors:
   - Shrishail Kariyappanavar <nkshrishail>

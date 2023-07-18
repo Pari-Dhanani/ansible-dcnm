@@ -24,6 +24,12 @@
     - 'result.response.DATA != None'
   tags: sanity
 
+- name: DELETED - setup - Clean up existing devices
+  cisco.dcnm.dcnm_inventory:
+    fabric: "{{ ansible_it_fabric }}"
+    state: deleted
+  register: result
+  tags: sanity
 
 ##############################################
 ##                MERGED                    ##
@@ -34,7 +40,7 @@
     fabric: "{{ ansible_it_fabric }}"
     state: merged
     config:
-    - seed_ip: "{{ ansible_switch3 }}"
+    - seed_ip: "{{ ansible_switch1 }}"
       auth_proto: MD5 # choose from [MD5, SHA, MD5_DES, MD5_AES, SHA_DES, SHA_AES]
       user_name: "{{ switch_username }}"
       password: "{{ switch_password }}"
@@ -76,7 +82,7 @@
     fabric: "{{ ansible_it_fabric }}"
     state: query
     config:
-    - seed_ip: "{{ ansible_switch3 }}"
+    - seed_ip: "{{ ansible_switch1 }}"
       role: leaf # default is Leaf - choose from [Leaf, Spine, Border, Border Spine, Border Gateway, Border Gateway Spine
                        # Super Spine, Border Super Spine, Border Gateway Super Spine]
   register: result
@@ -99,7 +105,7 @@
     fabric: "{{ ansible_it_fabric }}"
     state: overridden
     config:
-    - seed_ip: "{{ ansible_switch4 }}"
+    - seed_ip: "{{ ansible_switch2 }}"
       auth_proto: MD5 # choose from [MD5, SHA, MD5_DES, MD5_AES, SHA_DES, SHA_AES]
       user_name: "{{ switch_username }}"
       password: "{{ switch_password }}"
@@ -134,12 +140,12 @@
 ##                 CLEAN-UP                 ##
 ##############################################
 
-- name: DELETED - setup - Clean up any existing devices
+- name: DELETED - setup - Clean up existing devices
   cisco.dcnm.dcnm_inventory: &clean
     fabric: "{{ ansible_it_fabric }}"
     state: deleted
     config:
-    - seed_ip: "{{ ansible_switch4 }}"
+    - seed_ip: "{{ ansible_switch2 }}"
       auth_proto: MD5 # choose from [MD5, SHA, MD5_DES, MD5_AES, SHA_DES, SHA_AES]
       user_name: "{{ switch_username }}"
       password: "{{ switch_password }}"
@@ -152,3 +158,27 @@
   cisco.dcnm.dcnm_inventory: *clean
   register: result
   tags: sanity
+
+##############################################
+##             RESET FABRIC                 ##
+##############################################
+
+- name: RESET - setup switches in fabric
+  cisco.dcnm.dcnm_inventory:
+    fabric: "{{ ansible_it_fabric }}"
+    config:
+    - seed_ip: "{{ ansible_switch1 }}"
+      auth_proto: MD5 # choose from [MD5, SHA, MD5_DES, MD5_AES, SHA_DES, SHA_AES]
+      user_name: "{{ switch_username }}"
+      password: "{{ switch_password }}"
+      max_hops: 0
+      preserve_config: False # boolean, default is  true
+    - seed_ip: "{{ ansible_switch2 }}"
+      auth_proto: MD5 # choose from [MD5, SHA, MD5_DES, MD5_AES, SHA_DES, SHA_AES]
+      user_name: "{{ switch_username }}"
+      password: "{{ switch_password }}"
+      max_hops: 0
+      preserve_config: False # boolean, default is  true
+  register: result
+  tags: sanity
+

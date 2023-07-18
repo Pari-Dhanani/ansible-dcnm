@@ -31,6 +31,12 @@
     fabric: "{{ test_fabric }}"
     state: deleted
   tags: sanity
+
+- name: Pause for 20 seconds for NDFC to sync
+  ansible.builtin.pause:
+    seconds: 20
+  tags: sanity
+
 ###############################################
 ###                MERGED                    ##
 ###############################################
@@ -93,6 +99,11 @@
   cisco.dcnm.dcnm_vrf:
     fabric: "{{ test_fabric }}"
     state: deleted
+  tags: sanity
+
+- name: Pause for 20 seconds for NDFC to sync
+  ansible.builtin.pause:
+    seconds: 20
   tags: sanity
 
 ###############################################
@@ -244,6 +255,11 @@
     state: deleted
   tags: sanity
 
+- name: Pause for 20 seconds for NDFC to sync
+  ansible.builtin.pause:
+    seconds: 20
+  tags: sanity
+
 ###############################################
 ###              OVERRIDDEN                  ##
 ###############################################
@@ -357,6 +373,11 @@
     state: deleted
   tags: sanity
 
+- name: Pause for 20 seconds for NDFC to sync
+  ansible.builtin.pause:
+    seconds: 20
+  tags: sanity
+
 ###############################################
 ###                QUERY                     ##
 ###############################################
@@ -440,6 +461,11 @@
     fabric: "{{ test_fabric }}"
     state: deleted
   register: result
+  tags: sanity
+
+- name: Pause for 20 seconds for NDFC to sync
+  ansible.builtin.pause:
+    seconds: 20
   tags: sanity
 
 ###############################################
