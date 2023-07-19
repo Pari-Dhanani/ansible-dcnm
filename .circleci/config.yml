@@ -70,6 +70,7 @@ jobs:
       - run:
           name: Create Roles File header
           command: |
+            rm dcnm_roles.yaml
             echo "---" > dcnm_roles.yaml
             echo "- hosts: dcnm" >> dcnm_roles.yaml
             echo "  gather_facts: no" >> dcnm_roles.yaml
@@ -83,6 +84,8 @@ jobs:
             echo "  roles:" >> dcnm_roles.yaml
 
             cat dcnm_roles.yaml
+            pwd
+            ls -l
       - run:
           name: Copy static files
           command: |
@@ -128,6 +131,8 @@ jobs:
           command: |
             export MODULENAME="<< parameters.modulename >>"
             echo "    - dcnm_$MODULENAME" >> dcnm_roles.yaml
+            pwd
+            ls -l
             cat dcnm_roles.yaml
 
   sanity-tests:
