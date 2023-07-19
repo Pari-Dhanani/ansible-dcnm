@@ -2,11 +2,11 @@
 ##               SETUP                      ##
 ##############################################
 
-- name: Remove local log file
+- name: SANITY- Remove local log file
   local_action: command rm -f res_mgr.log
   tags: sanity
   
-- name: Delete Resources
+- name: SANITY- Delete Resources
   cisco.dcnm.dcnm_resource_manager: &rm_delete
     state: deleted                                 # choose form [merged, deleted, query]
     fabric: "{{ ansible_it_fabric }}"
@@ -71,7 +71,7 @@
 ##                MERGE                     ##
 ##############################################
 
-    - name: Create Resources
+    - name: SANITY- Create Resources
       cisco.dcnm.dcnm_resource_manager: &rm_merge
         state: merged                                # choose form [merged, deleted, query]
         fabric: "{{ ansible_it_fabric }}"
@@ -145,7 +145,7 @@
 ##               QUERY                      ##
 ##############################################
 
-    - name: Query all Resources - no filters
+    - name: SANITY- Query all Resources - no filters
       cisco.dcnm.dcnm_resource_manager:
         state: query                                 # choose form [merged, deleted, query]
         fabric: "{{ ansible_it_fabric }}"
@@ -155,7 +155,7 @@
         that:
           - '(result["response"] | length) != 0'
 
-    - name: Creating entity_names
+    - name: SANITY- Creating entity_names
       set_fact:
         entity_names:
           - "l3_vni_fabric"
@@ -168,7 +168,7 @@
           - "{{ ansible_sno_2 }}~{{ intf_1_3 }}~{{ ansible_sno_1 }}~{{ intf_1_3 }}"
           - "mmudigon-2"
 
-    - name: Query Resources - filter by entity name
+    - name: SANITY- Query Resources - filter by entity name
       cisco.dcnm.dcnm_resource_manager:
         state: query                                 # choose form [merged, deleted, query]
         fabric: "{{ ansible_it_fabric }}"
@@ -198,7 +198,7 @@
 
   always:
 
-    - name: Delete Resources
+    - name: SANITY- Delete Resources
       cisco.dcnm.dcnm_resource_manager: *rm_delete
       register: result
       when: IT_CONTEXT is not defined
