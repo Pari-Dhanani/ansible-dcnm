@@ -70,7 +70,6 @@ jobs:
       - run:
           name: Create Roles File header
           command: |
-            rm dcnm_roles.yaml
             echo "---" > dcnm_roles.yaml
             echo "- hosts: dcnm" >> dcnm_roles.yaml
             echo "  gather_facts: no" >> dcnm_roles.yaml
