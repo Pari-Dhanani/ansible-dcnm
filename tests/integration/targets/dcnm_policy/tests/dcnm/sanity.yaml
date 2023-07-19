@@ -2,11 +2,11 @@
 ##               SETUP                      ##
 ##############################################
 
-- name: Remove local log file
+- name: SANITY- Remove local log file
   local_action: command rm -f policy.log
   tags: sanity
 
-- name: Put the fabric to default state
+- name: SANITY- Put the fabric to default state
   cisco.dcnm.dcnm_policy:
     fabric: "{{ ansible_it_fabric }}"
     state: deleted                     # only choose form [merged, deleted, query]
@@ -35,7 +35,7 @@
 ##                MERGE                     ##
 ##############################################
 
-    - name: Create different non-existing policies
+    - name: SANITY- Create different non-existing policies
       cisco.dcnm.dcnm_policy: &dcnm_pol
         fabric: "{{ ansible_it_fabric }}"
         deploy: true
@@ -93,7 +93,7 @@
       loop_control:
         index_var: my_idx
 
-    - name: Setting fact
+    - name: SANITY- Setting fact
       set_fact:
         modify_policy_list: "{{ ( modify_policy_list | default([])) + [item['DATA']['successList'][0]['message'].split(' ')[0]] }}"
       when: (my_idx < (result["diff"][0]["merged"] | length))
@@ -101,18 +101,18 @@
       loop_control:
         index_var: my_idx
 
-    - name: Show the policy_list information
+    - name: SANITY- Show the policy_list information
       debug:
         var: modify_policy_list
 
-    - name: Setting fact
+    - name: SANITY- Setting fact
       set_fact:
         list_len: "{{ modify_policy_list | length }}"
 
 ##############################################
 ##                QUERY                     ##
 ##############################################
-    - name: Query all policies from the specified switches
+    - name: SANITY- Query all policies from the specified switches
       cisco.dcnm.dcnm_policy:
         fabric: "{{ ansible_it_fabric }}"
         state: query
@@ -130,7 +130,7 @@
           - '(result["diff"][0]["deploy"] | length) == 0'
           - '(result["response"] | length) != 0'
 
-    - name: Query specific policies
+    - name: SANITY- Query specific policies
       cisco.dcnm.dcnm_policy:
         fabric: "{{ ansible_it_fabric }}"
         state: query
@@ -157,7 +157,7 @@
 ##               MODIFY                     ##
 ##############################################
 
-    - name: Modify existing policy using template name - should create the policy
+    - name: SANITY- Modify existing policy using template name - should create the policy
       cisco.dcnm.dcnm_policy:
         fabric: "{{ ansible_it_fabric }}"
         deploy: true
@@ -179,7 +179,7 @@
           - '(result["diff"][0]["query"] | length) == 0'
           - '(result["diff"][0]["deploy"] | length) == 1'
 
-    - name: Modify policies - using policy IDs
+    - name: SANITY- Modify policies - using policy IDs
       cisco.dcnm.dcnm_policy:
         fabric: "{{ ansible_it_fabric }}"
         state: merged
@@ -228,7 +228,7 @@
 
   always:
 
-    - name: Delete all created policies
+    - name: SANITY- Delete all created policies
       cisco.dcnm.dcnm_policy:
         fabric: "{{ ansible_it_fabric }}"
         state: deleted                     # only choose form [merged, deleted, query]
