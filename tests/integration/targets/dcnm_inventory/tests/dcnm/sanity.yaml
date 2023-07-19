@@ -12,7 +12,7 @@
   when: controller_version >= "12"
   tags: sanity
 
-- name: MERGED - Verify if fabric is deployed.
+- name: SANITY- MERGED - Verify if fabric is deployed.
   cisco.dcnm.dcnm_rest:
     method: GET
     path: "{{ rest_path }}"
@@ -24,7 +24,7 @@
     - 'result.response.DATA != None'
   tags: sanity
 
-- name: DELETED - setup - Clean up existing devices
+- name: SANITY- DELETED - setup - Clean up existing devices
   cisco.dcnm.dcnm_inventory:
     fabric: "{{ ansible_it_fabric }}"
     state: deleted
@@ -35,7 +35,7 @@
 ##                MERGED                    ##
 ##############################################
 
-- name: MERGED - Merge a Switch using GreenField Deployment
+- name: SANITY- MERGED - Merge a Switch using GreenField Deployment
   cisco.dcnm.dcnm_inventory: &conf
     fabric: "{{ ansible_it_fabric }}"
     state: merged
@@ -62,7 +62,7 @@
   loop: '{{ result.response }}'
   tags: sanity
 
-- name: MERGED - conf1 - GF - Idempotence
+- name: SANITY- MERGED - conf1 - GF - Idempotence
   cisco.dcnm.dcnm_inventory: *conf
   register: result
   tags: sanity
@@ -77,7 +77,7 @@
 #                QUERY                     ##
 #############################################
 
-- name: QUERY - Query a Switch - Hostname and Role must match
+- name: SANITY- QUERY - Query a Switch - Hostname and Role must match
   cisco.dcnm.dcnm_inventory:
     fabric: "{{ ansible_it_fabric }}"
     state: query
@@ -100,7 +100,7 @@
 ##                OVERRIDDEN                ##
 ##############################################
 
-- name: OVERRIDDEN - Update a New Switch using GreenField Deployment - Delete and Create - default role
+- name: SANITY- OVERRIDDEN - Update a New Switch using GreenField Deployment - Delete and Create - default role
   cisco.dcnm.dcnm_inventory: &conf_over
     fabric: "{{ ansible_it_fabric }}"
     state: overridden
@@ -125,7 +125,7 @@
   loop: '{{ result.response }}'
   tags: sanity
 
-- name: OVERRIDDEN - conf1 - OV - Idempotence
+- name: SANITY- OVERRIDDEN - conf1 - OV - Idempotence
   cisco.dcnm.dcnm_inventory: *conf_over
   register: result
   tags: sanity
@@ -140,7 +140,7 @@
 ##                 CLEAN-UP                 ##
 ##############################################
 
-- name: DELETED - setup - Clean up existing devices
+- name: SANITY- DELETED - setup - Clean up existing devices
   cisco.dcnm.dcnm_inventory: &clean
     fabric: "{{ ansible_it_fabric }}"
     state: deleted
@@ -154,7 +154,7 @@
   register: result
   tags: sanity
 
-- name: DELETED - conf1 - OV - Idempotence
+- name: SANITY- DELETED - conf1 - OV - Idempotence
   cisco.dcnm.dcnm_inventory: *clean
   register: result
   tags: sanity
@@ -163,7 +163,7 @@
 ##             RESET FABRIC                 ##
 ##############################################
 
-- name: RESET - setup switches in fabric
+- name: SANITY- RESET - setup switches in fabric
   cisco.dcnm.dcnm_inventory:
     fabric: "{{ ansible_it_fabric }}"
     config:
