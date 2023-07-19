@@ -2,11 +2,11 @@
 ##               SETUP                      ##
 ##############################################
 
-- name: Remove local log file
+- name: SANITY- Remove local log file
   local_action: command rm -f srp.log
   tags: sanity
 
-- name: Delete route peerings
+- name: SANITY- Delete route peerings
   cisco.dcnm.dcnm_service_route_peering:
     fabric: "{{ ansible_it_fabric }}"
     service_fabric: "{{ ansible_it_service_fabric }}"
@@ -28,7 +28,7 @@
 ##                MERGE                     ##
 ##############################################
 
-    - name: Create different non-existing service route peerings including all objects
+    - name: SANITY- Create different non-existing service route peerings including all objects
       cisco.dcnm.dcnm_service_route_peering: &dcnm_srp_all
         fabric: "{{ ansible_it_fabric }}"
         service_fabric: "{{ ansible_it_service_fabric }}"
@@ -275,7 +275,7 @@
           - 'item["RETURN_CODE"] == 200'
       loop: '{{ result.response }}'
 
-    - name: Create service route peerings  - Idempotence
+    - name: SANITY- Create service route peerings  - Idempotence
       cisco.dcnm.dcnm_service_route_peering: *dcnm_srp_all
       register: result
 
@@ -295,7 +295,7 @@
   always:
 
 
-    - name: Delete all created route peerings
+    - name: SANITY- Delete all created route peerings
       cisco.dcnm.dcnm_service_route_peering:
         fabric: "{{ ansible_it_fabric }}"
         service_fabric: "{{ ansible_it_service_fabric }}"
