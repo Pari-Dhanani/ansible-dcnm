@@ -14,7 +14,7 @@
   when: controller_version >= "12"
   tags: sanity
 
-- name: REPLACED - Verify if fabric is deployed.
+- name: SANITY- REPLACED - Verify if fabric is deployed.
   cisco.dcnm.dcnm_rest:
     method: GET
     path: "{{ rest_path }}"
@@ -26,7 +26,7 @@
     - 'result.response.DATA != None'
   tags: sanity  
 
-- name: REPLACED - Verify if service fabric is deployed.
+- name: SANITY- REPLACED - Verify if service fabric is deployed.
   cisco.dcnm.dcnm_rest:
     method: GET
     path: "{{ rest_ext_path }}"
@@ -38,14 +38,14 @@
     - 'result.response.DATA != None'
   tags: sanity  
 
-- name: REPLACED - Clean up any existing service node
+- name: SANITY- REPLACED - Clean up any existing service node
   cisco.dcnm.dcnm_service_node:
     fabric: "{{ ansible_it_fabric }}"
     service_fabric: "{{ ansible_ext_fabric }}"
     state: deleted
   tags: sanity  
 
-- name: REPLACED -  Query fabric state before proceeding
+- name: SANITY- REPLACED -  Query fabric state before proceeding
   cisco.dcnm.dcnm_service_node:
     fabric: "{{ ansible_it_fabric }}"
     service_fabric: "{{ ansible_ext_fabric }}"
@@ -63,7 +63,7 @@
 ###                REPLACED                  ##
 ###############################################
 
-- name: REPLACED - Create Service Node with single switch
+- name: SANITY- REPLACED - Create Service Node with single switch
   cisco.dcnm.dcnm_service_node:
     fabric: "{{ ansible_it_fabric }}"
     service_fabric: "{{ ansible_ext_fabric }}"
@@ -93,12 +93,12 @@
     - 'result.response[0].DATA.name == "SN-11"'
   tags: sanity
 
-- name: REPLACED - sleep for 20 seconds for DCNM to completely update the state
+- name: SANITY- REPLACED - sleep for 20 seconds for DCNM to completely update the state
   wait_for:
     timeout: 20
   tags: sanity
 
-- name: REPLACED - Replace Service Node with form factor physical
+- name: SANITY- REPLACED - Replace Service Node with form factor physical
   cisco.dcnm.dcnm_service_node: &conf2
     fabric: "{{ ansible_it_fabric }}"
     service_fabric: "{{ ansible_ext_fabric }}"
@@ -127,12 +127,12 @@
     - 'result.response[0].DATA.type == "Firewall"'
     - 'result.response[0].DATA.name == "SN-11"'
 
-- name: REPLACED - sleep for 20 seconds for DCNM to completely update the state
+- name: SANITY- REPLACED - sleep for 20 seconds for DCNM to completely update the state
   wait_for:
     timeout: 20
   tags: sanity
 
-- name: REPLACED - conf2 - Idempotence
+- name: SANITY- REPLACED - conf2 - Idempotence
   cisco.dcnm.dcnm_service_node: *conf2
   register: result
   tags: sanity
@@ -142,7 +142,7 @@
     - 'result.changed == false'
   tags: sanity
 
-- name: REPLACED - Replace Service Node with type load balancer
+- name: SANITY- REPLACED - Replace Service Node with type load balancer
   cisco.dcnm.dcnm_service_node:
     fabric: "{{ ansible_it_fabric }}"
     service_fabric: "{{ ansible_ext_fabric }}"
@@ -172,12 +172,12 @@
     - 'result.response[0].DATA.name == "SN-11"'
   tags: sanity
 
-- name: REPLACED - sleep for 20 seconds for DCNM to completely update the state
+- name: SANITY- REPLACED - sleep for 20 seconds for DCNM to completely update the state
   wait_for:
     timeout: 20
   tags: sanity
 
-- name: REPLACED - Replace Service Node with type virtual network function
+- name: SANITY- REPLACED - Replace Service Node with type virtual network function
   cisco.dcnm.dcnm_service_node:
     fabric: "{{ ansible_it_fabric }}"
     service_fabric: "{{ ansible_ext_fabric }}"
@@ -207,12 +207,12 @@
     - 'result.response[0].DATA.name == "SN-11"'
   tags: sanity
 
-- name: REPLACED - sleep for 20 seconds for DCNM to completely update the state
+- name: SANITY- REPLACED - sleep for 20 seconds for DCNM to completely update the state
   wait_for:
     timeout: 20
   tags: sanity
 
-- name: REPLACED - Replace Service Node with a new creation of service node, since the sn is not created already
+- name: SANITY- REPLACED - Replace Service Node with a new creation of service node, since the sn is not created already
   cisco.dcnm.dcnm_service_node:
     fabric: "{{ ansible_it_fabric }}"
     service_fabric: "{{ ansible_ext_fabric }}"
@@ -242,14 +242,14 @@
     - 'result.response[0].DATA.type == "Firewall"'
     - 'result.response[0].DATA.name == "SN-11111111111"'
 
-- name: REPLACED - Clean up any existing service node
+- name: SANITY- REPLACED - Clean up any existing service node
   cisco.dcnm.dcnm_service_node:
     fabric: "{{ ansible_it_fabric }}"
     service_fabric: "{{ ansible_ext_fabric }}"
     state: deleted
   tags: sanity
 
-- name: REPLACED -  Query fabric state before proceeding
+- name: SANITY- REPLACED -  Query fabric state before proceeding
   cisco.dcnm.dcnm_service_node:
     fabric: "{{ ansible_it_fabric }}"
     service_fabric: "{{ ansible_ext_fabric }}"
@@ -266,7 +266,7 @@
 ###                OVERRIDDEN                ##
 ###############################################
 
-- name: OVERRIDDEN - Create 2 Service Nodes
+- name: SANITY- OVERRIDDEN - Create 2 Service Nodes
   cisco.dcnm.dcnm_service_node:
     fabric: "{{ ansible_it_fabric }}"
     service_fabric: "{{ ansible_ext_fabric }}"
@@ -312,12 +312,12 @@
     - 'result.response[1].DATA.name == "SN-12"'
   tags: sanity
 
-- name: OVERRIDDEN - sleep for 20 seconds for DCNM to completely update the state
+- name: SANITY- OVERRIDDEN - sleep for 20 seconds for DCNM to completely update the state
   wait_for:
     timeout: 20
   tags: sanity
 
-- name: OVERRIDDEN - Create and Delete new service nodes
+- name: SANITY- OVERRIDDEN - Create and Delete new service nodes
   cisco.dcnm.dcnm_service_node: &conf1
     fabric: "{{ ansible_it_fabric }}"
     service_fabric: "{{ ansible_ext_fabric }}"
@@ -367,12 +367,12 @@
     - 'result.response[3].DATA.name == "SN-14"'
   tags: sanity
 
-- name: OVERRIDDEN - sleep for 20 seconds for DCNM to completely update the state
+- name: SANITY- OVERRIDDEN - sleep for 20 seconds for DCNM to completely update the state
   wait_for:
     timeout: 20
   tags: sanity
 
-- name: OVERRIDDEN - conf1 - Idempotence
+- name: SANITY- OVERRIDDEN - conf1 - Idempotence
   cisco.dcnm.dcnm_service_node: *conf1
   register: result
   tags: sanity
@@ -383,14 +383,14 @@
     - 'result.response|length == 0'
   tags: sanity
 
-- name: OVERRIDDEN - Clean up any existing service node
+- name: SANITY- OVERRIDDEN - Clean up any existing service node
   cisco.dcnm.dcnm_service_node:
     fabric: "{{ ansible_it_fabric }}"
     service_fabric: "{{ ansible_ext_fabric }}"
     state: deleted
   tags: sanity
 
-- name: OVERRIDDEN -  Query fabric state before proceeding
+- name: SANITY- OVERRIDDEN -  Query fabric state before proceeding
   cisco.dcnm.dcnm_service_node:
     fabric: "{{ ansible_it_fabric }}"
     service_fabric: "{{ ansible_ext_fabric }}"
@@ -407,7 +407,7 @@
 ###                QUERY                     ##
 ###############################################
 
-- name: QUERY - Create Service Node with single switch
+- name: SANITY- QUERY - Create Service Node with single switch
   cisco.dcnm.dcnm_service_node:
     fabric: "{{ ansible_it_fabric }}"
     service_fabric: "{{ ansible_ext_fabric }}"
@@ -437,12 +437,12 @@
     - 'result.response[0].DATA.name == "SN-11"'
   tags: sanity
 
-- name: QUERY - sleep for 20 seconds for DCNM to completely update the state
+- name: SANITY- QUERY - sleep for 20 seconds for DCNM to completely update the state
   wait_for:
     timeout: 20
   tags: sanity
 
-- name: QUERY - Query the - Create Service Node with single switch
+- name: SANITY- QUERY - Query the - Create Service Node with single switch
   cisco.dcnm.dcnm_service_node:
     fabric: "{{ ansible_it_fabric }}"
     service_fabric: "{{ ansible_ext_fabric }}"
@@ -471,7 +471,7 @@
     - 'result.response[0].name == "SN-11"'
   tags: sanity
 
-- name: QUERY - Query without the config element
+- name: SANITY- QUERY - Query without the config element
   cisco.dcnm.dcnm_service_node:
     fabric: "{{ ansible_it_fabric }}"
     service_fabric: "{{ ansible_ext_fabric }}"
@@ -491,14 +491,14 @@
     - 'result.response[0].name == "SN-11"'
   tags: sanity
 
-- name: QUERY - Clean up any existing service node
+- name: SANITY- QUERY - Clean up any existing service node
   cisco.dcnm.dcnm_service_node:
     fabric: "{{ ansible_it_fabric }}"
     service_fabric: "{{ ansible_ext_fabric }}"
     state: deleted
   tags: sanity
 
-- name: QUERY -  Query fabric state before proceeding
+- name: SANITY- QUERY -  Query fabric state before proceeding
   cisco.dcnm.dcnm_service_node:
     fabric: "{{ ansible_it_fabric }}"
     service_fabric: "{{ ansible_ext_fabric }}"
