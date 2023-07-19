@@ -1,5 +1,0 @@
-[all:vars]
-ansible_python_interpreter=/home/circleci/.pyenv/versions/python_3.9/bin/python
-
-[dcnm]
-  10.2.1.99
