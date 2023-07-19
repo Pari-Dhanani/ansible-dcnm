@@ -28,9 +28,6 @@ parameters:
   run-resource_manager:
     type: boolean
     default: false
-#  run-rest:
-#    type: boolean
-#    default: false
   run-service_node:
     type: boolean
     default: false
@@ -102,19 +99,8 @@ jobs:
             export PATH="$PYENV_ROOT/shims/python:$PATH"
             export PYTHONPATH="$PYENV_ROOT/shims/python3:$PYTHONPATH"
             export PYTHONPATH="$PYENV_ROOT/shims/python:$PYTHONPATH"
-              #echo "**********************"
-            # whoami
-            # echo "**********************"
-            # echo $PYTHONPATH
-            # echo $PATH
-            # echo $HOME
-            # echo $PYENV_ROOT
-            # echo "**********************"
+
             pyenv local python_3.11
-            # /home/circleci/.pyenv/bin/pyenv versions
-            # /home/circleci/.pyenv/shims/python --version
-            # python3 --version
-            # python --version
 
             #pip install https://github.com/ansible/ansible/archive/v<< parameters.ansible_version >>.tar.gz --disable-pip-version-check
             ansible --version
@@ -122,6 +108,7 @@ jobs:
             ansible-galaxy collection build --force --output-path "${HOME}/.cache/v<< parameters.ansible_version >>/collection-tarballs"
             pip install pytest==5.4.1
             pip install coverage==4.5.4
+            
             pyenv local system
 
   addrole:
@@ -171,12 +158,8 @@ jobs:
 
             pyenv local python_<< parameters.py_version >>
      
-
             cat dcnm_roles.yaml
             
-            
-
-            # ansible-test sanity --docker --python << parameters.py_version >> -v --color --truncate 0
 
           environment:
             PYTHONPATH: /home/circleci/.ansible/collections/:$PYTHONPATH
@@ -201,11 +184,10 @@ jobs:
           name: Run sanity tests py << parameters.py_version >>
           command: |
             export ANSIBLE_ROLES_PATH=/home/circleci/repo/tests/integration/targets/
+            export ANSIBLE_PERSISTENT_CONNECT_TIMEOUT=1000
+            export ANSIBLE_PERSISTENT_COMMAND_TIMEOUT=1000
             env
             ansible-playbook -i hosts dcnm_roles.yaml --tags sanity -vvvv
-          # command: ansible-test sanity --python 3.8 -v --color --truncate 0
-          # environment:
-          #   PYTHONPATH: /home/circleci/.ansible/collections/
 
 
 
@@ -466,18 +448,18 @@ workflows:
 
       
 
-#  service_route_peering:
-#    when:
-#      or:
-#        - << pipeline.parameters.run-all >>
-#        - << pipeline.parameters.run-service_route_peering >>
-#    jobs:
-#      - addrole:
-#
-#          matrix:
-#            parameters:
-#              modulename:
-#                - service_route_peering
+  service_route_peering:
+    when:
+      or:
+        - << pipeline.parameters.run-all >>
+        - << pipeline.parameters.run-service_route_peering >>
+    jobs:
+      - addrole:
+
+          matrix:
+            parameters:
+              modulename:
+                - service_route_peering
 
   template:
     when:
@@ -491,19 +473,6 @@ workflows:
             parameters:
               modulename:
                 - template
-
-#  rest:
-#    when: 
-#      or:
-#        - << pipeline.parameters.run-all >>
-#        - << pipeline.parameters.run-rest >>
-#    jobs:
-#      - addrole:
-#
-#          matrix:
-#            parameters:
-#              modulename:
-#                - rest
 
 
   sanity:
