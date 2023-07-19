@@ -2,7 +2,7 @@
 
 - set_fact:
     controller_version: "Unable to determine controller version"
-  tags: sanity  
+  tags: sanity
 
 - name: Determine version of DCNM or NDFC
   cisco.dcnm.dcnm_rest:
@@ -36,13 +36,13 @@
 - assert:
     that:
     - 'controller_version != "Unable to determine controller version"'
-  tags: sanity  
+  tags: sanity
 
 - name: Remove all existing networks to start with a clean state
   cisco.dcnm.dcnm_network:
     fabric: "{{ test_fabric }}"
     state: deleted
-  tags: sanity  
+  tags: sanity
 
 - name: Create vrfs required for this test and remove all other vrfs
   cisco.dcnm.dcnm_vrf:
@@ -70,6 +70,7 @@
       - ip_address: "{{ ansible_switch1 }}"
       - ip_address: "{{ ansible_switch2 }}"
       deploy: true
-  tags: sanity    
+  tags: sanity
 
-- { include_tasks: dcnm.yaml, tags: ['dcnm'] }
+- { include: dcnm.yaml, tags: ['dcnm'] }
+#- { include_tasks: dcnm.yaml, tags: ['dcnm'] }
