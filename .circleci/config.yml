@@ -128,6 +128,7 @@ jobs:
           command: |
             export MODULENAME="<< parameters.modulename >>"
             echo "    - dcnm_$MODULENAME" >> dcnm_roles.yaml
+            cat dcnm_roles.yaml
 
   sanity-tests:
     parameters:
