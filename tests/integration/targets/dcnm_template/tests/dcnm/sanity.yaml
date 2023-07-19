@@ -2,7 +2,7 @@
 ##               SETUP                      ##
 ##############################################
 
-- name: Initialize the setup
+- name: SANITY- Initialize the setup
   cisco.dcnm.dcnm_template:
     state: deleted       # only choose form [merged, deleted, query]
     config:
@@ -26,7 +26,7 @@
 ##                MERGE                     ##
 ##############################################
 
-    - name: Create templates
+    - name: SANITY- Create templates
       cisco.dcnm.dcnm_template: &temp_merge
         state: merged        # only choose form [merged, deleted, query]
         config:
@@ -128,7 +128,7 @@
 ##############################################
 
 
-    - name: Modifying existing templates
+    - name: SANITY- Modifying existing templates
       cisco.dcnm.dcnm_template: &temp_repl
         state: merged        # only choose form [merged, deleted, query]
         config:
@@ -231,7 +231,7 @@
 ##                CLEANUP                   ##
 ##############################################
 
-    - name: Initialize the setup
+    - name: SANITY- Initialize the setup
       cisco.dcnm.dcnm_template:
         state: deleted       # only choose form [merged, deleted, query]
         config:
@@ -244,7 +244,7 @@
 ##               NO DELETE                  ##
 ##############################################
 
-    - name: Create a template
+    - name: SANITY- Create a template
       cisco.dcnm.dcnm_template: &temp_merge2
         state: merged        # only choose form [merged, deleted, query]
         config:
@@ -280,7 +280,7 @@
           - '"Template Created" in item["DATA"]["status"]'
       loop: '{{ result.response }}'
 
-    - name: Delete templates along with the template which is already installed on a switch
+    - name: SANITY- Delete templates along with the template which is already installed on a switch
       cisco.dcnm.dcnm_template: 
         state: deleted       # only choose form [merged, deleted, query]
         config:
@@ -300,7 +300,7 @@
           - '"template_inuse_2" in result["template-policy-map"].keys()'
       loop: '{{ result.response }}'
 
-    - name: Delete a template which is not existing
+    - name: SANITY- Delete a template which is not existing
       cisco.dcnm.dcnm_template: 
         state: deleted       # only choose form [merged, deleted, query]
         config:
@@ -317,7 +317,7 @@
 ##                 QUERY                    ##
 ##############################################
 
-    - name: Query a template
+    - name: SANITY- Query a template
       cisco.dcnm.dcnm_template: 
         state: query       # only choose form [merged, deleted, query]
         config:
@@ -345,7 +345,7 @@
 ##        TEMPLATE VALIDATION FAIL          ##
 ##############################################
 
-    - name: Create templates
+    - name: SANITY- Create templates
       cisco.dcnm.dcnm_template: &temp_merge3
         state: merged        # only choose form [merged, deleted, query]
         config:
@@ -376,7 +376,7 @@
           - '(result["diff"][0]["deleted"] | length) == 0'
           - '(result["diff"][0]["query"] | length) == 0'
 
-    - name: set_fact when error found
+    - name: SANITY- set_fact when error found
       set_fact:
         error_exists: true
       loop: "{{ lookup('list', result['response'][0]['DATA']) }}"
@@ -391,7 +391,7 @@
 ##############################################
 
 
-    - name: Create templates
+    - name: SANITY- Create templates
       cisco.dcnm.dcnm_template: &temp_merge4
         state: replaced        # only choose form [merged, deleted, query]
         config:
@@ -425,7 +425,7 @@
 ##############################################
 
 
-    - name: Delete all templates created
+    - name: SANITY- Delete all templates created
       cisco.dcnm.dcnm_template: &temp_delete 
         state: deleted       # only choose form [merged, deleted, query]
         config:
