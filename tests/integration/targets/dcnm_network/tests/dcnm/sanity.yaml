@@ -256,7 +256,7 @@
 ##############################################
 
 - name: SANITY- REPLACED - Update Network using replace - Delete Attachments
-  cisco.dcnm.dcnm_network: &conf1
+  cisco.dcnm.dcnm_network: &conf2
     fabric: "{{ test_fabric }}"
     state: replaced
     config:
@@ -309,7 +309,7 @@
   tags: sanity  
 
 - name: SANITY- REPLACED - conf1 - Idempotence
-  cisco.dcnm.dcnm_network: *conf1
+  cisco.dcnm.dcnm_network: *conf2
   register: result
   tags: sanity
 
