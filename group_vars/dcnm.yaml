@@ -1,0 +1,140 @@
+---
+  
+ansible_ssh_user: admin
+ansible_user: admin
+ansible_network_os: cisco.dcnm.dcnm
+ansible_ssh_pass: ins3965!
+ansible_pass: ins3965!
+ansible_python_interpreter: python
+ansible_httpapi_validate_certs: False
+ansible_httpapi_use_ssl : True
+ansible_int1 : Ethernet1/3
+ansible_int2 : Ethernet1/2
+ansible_int3 : Ethernet1/2
+intf_1_10 : Ethernet1/10
+intf_1_3 : Ethernet1/3
+intf_1_2 : Ethernet1/2
+intf_1_1 : Ethernet1/1
+intf_1_4 : Ethernet1/4
+intf_1_5 : Ethernet1/5
+ansible_sw1_int1 : Ethernet1/24
+ansible_sw1_int2 : Ethernet1/26
+ansible_sw2_int1 : Ethernet1/24
+ansible_sw2_int2 : Ethernet1/26
+ansible_sw1_int3 : Ethernet1/24
+ansible_sw1_int4 : Ethernet1/25
+ansible_sw2_int3 : Ethernet1/24
+ansible_sw2_int4 : Ethernet1/26
+ansible_sw2_int5 : Ethernet1/24
+ansible_sw2_int6 : Ethernet1/26
+ansible_it_fabric : test_fabric
+ansible_ext_fabric : test_ext_fabric
+ansible_it_service_fabric : test_ext_fabric
+ansible_svi_fabric : test_fabric
+test_fabric: test_fabric
+ansible_num_fabric: test_fabric
+ansible_switch1 : 10.2.5.10
+ansible_switch2 : 10.2.5.11
+ansible_sno_1 : 9QCOXEMR23F
+ansible_sno_2 : 94ISY0RAPF9
+ansible_num_switch1 : 10.2.5.10
+ansible_num_switch2 : 10.2.5.11
+switch_username:  admin
+switch_password: ins3965!
+ansible_vpc1: vPC2
+ansible_vpc2: vPC1
+ansible_poap_switch : 192.168.123.223
+ansible_poap_serial : "9D2DAUJJFQQ"
+ansible_poap_model : "N9K-C9300v"
+ansible_poap_swversion : "9.3(7)"
+ansible_poap_hostname : "test_poap_test"
+ansible_poap_config_data : '{"modulesModel": ["N9K-C9300v"], "gateway": "192.168.123.1/24"}'
+ansible_prepro_switch : 192.168.123.224
+ansible_prepro_serial : "9D2DAUJJFRR"
+ansible_prepro_model : "N9K-C9300v"
+ansible_prepro_swversion : "9.3(7)"
+ansible_prepro_hostname : "test_poap_prepro"
+ansible_modules_model: ["N9K-C9300v"]
+ansible_bstrap_gateway: 192.168.123.1/24
+ansible_prepro_config_data : '{modulesModel: ["N9K-C9300v"], gateway: 192.168.123.1/24}'
+ansible_rma_serial: "9D2DAUJJFQQ"
+ansible_switch1_serial: "944XJW7L3YJ"
+ansible_rma_model : "N9K-C9300v"
+ansible_rma_swversion : "9.3(7)"
+ansible_rma_hostname : "test_poap_test"
+ansible_rma_modules: ["N9K-C9300v"]
+test_ing_fabric: test_poap
+ansible_ing_switch1: 192.168.123.219
+ansible_ing_sw1_int1 : Ethernet1/24
+ansible_ing_sw1_int2 : Ethernet1/26
+
+# All physical interfaces are defined as variables here. Make sure for running VPC interfaces
+# the following interfaces are not part of VPC link
+ansible_eth_intf1: eth1/16
+ansible_sub_intf1: eth1/16.10
+ansible_eth_intf2: eth1/20
+ansible_eth_intf3: eth1/21
+ansible_eth_intf4: eth1/22
+ansible_eth_intf5: eth1/23
+ansible_eth_intf6: eth1/24
+ansible_eth_intf7: eth1/30
+ansible_eth_intf8: eth1/31
+ansible_eth_intf9: eth1/32
+ansible_eth_intf10: eth1/33
+ansible_eth_intf11: eth1/34
+ansible_eth_intf12: eth1/40
+ansible_sub_intf4: eth1/19.10
+ansible_sub_intf5: eth1/19.20
+ansible_sub_intf2: eth1/16.20
+ansible_sub_intf3: eth1/16.30
+ansible_eth_intf13: eth1/10
+ansible_eth_intf14: eth1/11
+ansible_eth_intf15: eth1/12
+ansible_eth_intf16: eth1/13
+ansible_eth_intf17: eth1/14
+ansible_eth_intf18: eth1/15
+# Changed this last - eth1/15 to eth1/18
+ansible_eth_intf19: eth1/18
+ansible_eth_intf20: eth1/17
+ansible_eth_intf21: eth1/25
+ansible_eth_intf22: eth1/26
+ansible_eth_intf23: eth1/28
+ansible_eth_intf24: eth1/27
+
+# VRFs for Service Route Peering
+
+ansible_vrf_11 : MY_IT_VRF_11
+ansible_vrf_12 : MY_IT_VRF_12
+ansible_vrf_21 : MY_IT_VRF_21
+ansible_vrf_22 : MY_IT_VRF_22
+ansible_vrf_31 : MY_IT_VRF_31
+ansible_vrf_32 : MY_IT_VRF_32
+ansible_vrf_41 : MY_IT_VRF_41
+ansible_vrf_42 : MY_IT_VRF_42
+ansible_vrf_51 : MY_IT_VRF_51
+ansible_vrf_52 : MY_IT_VRF_52
+ansible_vrf_61 : MY_IT_VRF_61
+ansible_vrf_62 : MY_IT_VRF_62
+ansible_vrf_71 : MY_IT_VRF_71
+ansible_vrf_72 : MY_IT_VRF_72
+ansible_vrf_81 : MY_IT_VRF_81
+ansible_vrf_82 : MY_IT_VRF_82
+
+# Service Nodes for Service Route Peering
+
+ansible_snode_1 : IT-SN-1
+ansible_snode_2 : IT-SN-2
+ansible_snode_3 : IT-SN-3
+
+ansible_fw_rp1:  IT-FW-RP1
+ansible_fw_rp2:  IT-FW-RP2
+ansible_fw_rp3:  IT-FW-RP3
+ansible_adc_rp4: IT-ADC-RP4
+ansible_adc_rp5: IT-ADC-RP5
+ansible_adc_rp6: IT-ADC-RP6
+ansible_adc_rp7: IT-ADC-RP7
+ansible_adc_rp8: IT-VNF-RP8
+
+ansible_att_intf1 : Ethernet1/2
+ansible_att_intf2 : Ethernet1/3
+ansible_att_intf3 : Ethernet1/4
