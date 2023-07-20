@@ -12,7 +12,7 @@
   when: controller_version >= "12"
   tags: sanity
 
-- name:  Verify if fabric - Fabric1 is deployed.
+- name: SANITY- Verify if fabric - Fabric1 is deployed.
   cisco.dcnm.dcnm_rest:
     method: GET
     path: "{{ rest_path }}"
@@ -24,13 +24,13 @@
     - 'result.response.DATA != None'
   tags: sanity
 
-- name: DELETED - setup - Clean up any existing networks
+- name: SANITY- DELETED - setup - Clean up any existing networks
   cisco.dcnm.dcnm_network:
     fabric: "{{ test_fabric }}"
     state: deleted
-  tags: sanity  
+  tags: sanity
 
-- name: MERGED - Create, Attach and Deploy Multiple Network with Single Switch Attach
+- name: SANITY- MERGED - Create, Attach and Deploy Multiple Network with Single Switch Attach
   cisco.dcnm.dcnm_network:
     fabric: "{{ test_fabric }}"
     state: merged
@@ -64,7 +64,7 @@
   register: result
   tags: sanity
 
-- name: Query fabric state until networkStatus transitions to DEPLOYED state
+- name: SANITY- Query fabric state until networkStatus transitions to DEPLOYED state
   cisco.dcnm.dcnm_network:
     fabric: "{{ test_fabric }}"
     state: query
@@ -95,13 +95,13 @@
     - 'result.diff[1].net_name == "ansible-net12"'
     - 'result.diff[1].net_id == 7002'
     - 'result.diff[1].vrf_name == "Tenant-2"'
-  tags: sanity  
+  tags: sanity
 
 ##############################################
 ##                OVERRIDDEN                ##
 ##############################################
 
-- name: OVERRIDDEN - Create, Attach and Deploy Multiple Network with Single Switch Attach
+- name: SANITY- OVERRIDDEN - Create, Attach and Deploy Multiple Network with Single Switch Attach
   cisco.dcnm.dcnm_network: &conf1
     fabric: "{{ test_fabric }}"
     state: overridden
@@ -124,7 +124,7 @@
   register: result
   tags: sanity
 
-- name: Query fabric state until networkStatus transitions to DEPLOYED state
+- name: SANITY- Query fabric state until networkStatus transitions to DEPLOYED state
   cisco.dcnm.dcnm_network:
     fabric: "{{ test_fabric }}"
     state: query
@@ -161,30 +161,32 @@
     - '"{{ ansible_switch2 }}" in result.diff[1].attach[0].ip_address'
     - 'result.diff[1].net_name == "ansible-net12"'    
   tags: sanity
+
 - name: OVERRIDDEN - conf1 - Idempotence
   cisco.dcnm.dcnm_network: *conf1
   register: result
+  tags: sanity
 
 - assert:
     that:
     - 'result.changed == false'
     - 'result.response|length == 0'
-  tags: sanity  
+  tags: sanity
 
-- name: OVERRIDDEN - setup - remove any networks
+- name: SANITY- OVERRIDDEN - setup - remove any networks
   cisco.dcnm.dcnm_network:
     fabric: "{{ test_fabric }}"
     state: deleted
   tags: sanity
 
 
-- name: REPLACED - setup - Clean up any existing networks
+- name: SANITY- REPLACED - setup - Clean up any existing networks
   cisco.dcnm.dcnm_network:
     fabric: "{{ test_fabric }}"
     state: deleted
-  tags: sanity  
+  tags: sanity
 
-- name: REPLACED - Create, Attach and Deploy Multiple Network with Single Switch Attach
+- name: SANITY- REPLACED - Create, Attach and Deploy Multiple Network with Single Switch Attach
   cisco.dcnm.dcnm_network:
     fabric: "{{ test_fabric }}"
     state: merged
@@ -218,7 +220,7 @@
   register: result
   tags: sanity
 
-- name: Query fabric state until networkStatus transitions to DEPLOYED state
+- name: SANITY- Query fabric state until networkStatus transitions to DEPLOYED state
   cisco.dcnm.dcnm_network:
     fabric: "{{ test_fabric }}"
     state: query
@@ -249,14 +251,14 @@
     - 'result.diff[1].net_name == "ansible-net12"'
     - 'result.diff[1].net_id == 7002'
     - 'result.diff[1].vrf_name == "Tenant-2"'
-  tags: sanity  
+  tags: sanity
 
 ##############################################
 ##                REPLACED                  ##
 ##############################################
 
-- name: REPLACED - Update Network using replace - Delete Attachments
-  cisco.dcnm.dcnm_network: &conf1
+- name: SANITY- REPLACED - Update Network using replace - Delete Attachments
+  cisco.dcnm.dcnm_network: &conf2
     fabric: "{{ test_fabric }}"
     state: replaced
     config:
@@ -299,17 +301,17 @@
     - '(result.response[0].DATA|dict2items)[1].value == "SUCCESS"'
     - '(result.response[0].DATA|dict2items)[2].value == "SUCCESS"'
     - 'result.diff[0].attach[0].deploy == false'
-    - 'result.diff[0].attach[1].deploy == false'
     - '"{{ ansible_switch1 }}" or "{{ ansible_switch2 }}" in result.diff[1].attach[0].ip_address'
     - '"{{ ansible_switch2 }}" or "{{ ansible_switch1 }}" in result.diff[1].attach[1].ip_address'
     - '"ansible-net13" or "ansible-net12" in result.diff[1].net_name'
+    - 'result.diff[1].attach[1].deploy == false'
     - 'result.diff[1].attach[0].deploy == false'
     - '"{{ ansible_switch2 }}" in result.diff[0].attach[0].ip_address'
     - '"ansible-net13" or "ansible-net12" in result.diff[0].net_name'
-  tags: sanity  
+  tags: sanity
 
-- name: REPLACED - conf1 - Idempotence
-  cisco.dcnm.dcnm_network: *conf1
+- name: SANITY - REPLACED - conf1 - Idempotence
+  cisco.dcnm.dcnm_network: *conf2
   register: result
   tags: sanity
 
@@ -317,4 +319,10 @@
     that:
     - 'result.changed == false'
     - 'result.response|length == 0'
-  tags: sanity  
+  tags: sanity
+
+- name: SANITY - DELETED - setup - Clean up any existing networks
+  cisco.dcnm.dcnm_network:
+    fabric: "{{ test_fabric }}"
+    state: deleted
+  tags: sanity

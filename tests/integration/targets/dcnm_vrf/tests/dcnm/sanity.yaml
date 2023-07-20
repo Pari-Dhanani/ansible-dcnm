@@ -14,7 +14,7 @@
   tags:
     - sanity
 
-- name: MERGED - Verify if fabric is deployed.
+- name: SANITY- MERGED - Verify if fabric is deployed.
   cisco.dcnm.dcnm_rest:
     method: GET
     path: "{{ rest_path }}"
@@ -26,16 +26,22 @@
     - 'result.response.DATA != None'
   tags: sanity
 
-- name: MERGED - Clean up any existing vrfs
+- name: SANITY- MERGED - Clean up any existing vrfs
   cisco.dcnm.dcnm_vrf:
     fabric: "{{ test_fabric }}"
     state: deleted
   tags: sanity
+
+- name: SANITY- Pause for 20 seconds for NDFC to sync
+  ansible.builtin.pause:
+    seconds: 20
+  tags: sanity
+
 ###############################################
 ###                MERGED                    ##
 ###############################################
 
-- name: MERGED - Create, Attach and Deploy new VRF - VLAN Provided by the User
+- name: SANITY- MERGED - Create, Attach and Deploy new VRF - VLAN Provided by the User
   cisco.dcnm.dcnm_vrf: &conf
     fabric: "{{ test_fabric }}"
     state: merged
@@ -52,7 +58,7 @@
   register: result
   tags: sanity
 
-- name: Query fabric state until vrfStatus transitions to DEPLOYED state
+- name: SANITY- Query fabric state until vrfStatus transitions to DEPLOYED state
   cisco.dcnm.dcnm_vrf:
     fabric: "{{ test_fabric }}"
     state: query
@@ -78,7 +84,7 @@
     - 'result.diff[0].vrf_name == "ansible-vrf-int1"'
   tags: sanity
 
-- name: MERGED - conf1 - Idempotence
+- name: SANITY- MERGED - conf1 - Idempotence
   cisco.dcnm.dcnm_vrf: *conf
   register: result
   tags: sanity
@@ -89,17 +95,22 @@
     - 'result.response|length == 0'
   tags: sanity
 
-- name: MERGED - Clean up any existing vrfs
+- name: SANITY- MERGED - Clean up any existing vrfs
   cisco.dcnm.dcnm_vrf:
     fabric: "{{ test_fabric }}"
     state: deleted
+  tags: sanity
+
+- name: SANITY- Pause for 20 seconds for NDFC to sync
+  ansible.builtin.pause:
+    seconds: 20
   tags: sanity
 
 ###############################################
 ###                REPLACED                  ##
 ###############################################
 
-- name: REPLACED - Create, Attach and Deploy new VRF - VLAN Provided by the User
+- name: SANITY- REPLACED - Create, Attach and Deploy new VRF - VLAN Provided by the User
   cisco.dcnm.dcnm_vrf:
     fabric: "{{ test_fabric }}"
     state: merged
@@ -116,7 +127,7 @@
   register: result
   tags: sanity
 
-- name: Query fabric state until vrfStatus transitions to DEPLOYED state
+- name: SANITY- Query fabric state until vrfStatus transitions to DEPLOYED state
   cisco.dcnm.dcnm_vrf:
     fabric: "{{ test_fabric }}"
     state: query
@@ -140,7 +151,7 @@
     - 'result.diff[0].vrf_name == "ansible-vrf-int1"'
   tags: sanity
 
-- name: REPLACED - Update existing VRF using replace - delete attachments
+- name: SANITY- REPLACED - Update existing VRF using replace - delete attachments
   cisco.dcnm.dcnm_vrf: &conf1
     fabric: "{{ test_fabric }}"
     state: replaced
@@ -153,7 +164,7 @@
   register: result
   tags: sanity
 
-- name: Query fabric state until vrfStatus transitions to DEPLOYED state
+- name: SANITY- Query fabric state until vrfStatus transitions to DEPLOYED state
   cisco.dcnm.dcnm_vrf:
     fabric: "{{ test_fabric }}"
     state: query
@@ -176,7 +187,7 @@
     - 'result.diff[0].vrf_name == "ansible-vrf-int1"'
   tags: sanity
 
-- name: REPLACED - conf1 - Idempotence
+- name: SANITY- REPLACED - conf1 - Idempotence
   cisco.dcnm.dcnm_vrf: *conf1
   register: result
   tags: sanity
@@ -186,7 +197,7 @@
     - 'result.changed == false'
   tags: sanity
 
-- name: REPLACED - Update existing VRF using replace - create attachments
+- name: SANITY- REPLACED - Update existing VRF using replace - create attachments
   cisco.dcnm.dcnm_vrf: &conf2
     fabric: "{{ test_fabric }}"
     state: replaced
@@ -203,7 +214,7 @@
   register: result
   tags: sanity
 
-- name: Query fabric state until vrfStatus transitions to DEPLOYED state
+- name: SANITY- Query fabric state until vrfStatus transitions to DEPLOYED state
   cisco.dcnm.dcnm_vrf:
     fabric: "{{ test_fabric }}"
     state: query
@@ -228,7 +239,7 @@
     - 'result.diff[0].attach[1].vlan_id == 500'
   tags: sanity
 
-- name: REPLACED - conf2 - Idempotence
+- name: SANITY- REPLACED - conf2 - Idempotence
   cisco.dcnm.dcnm_vrf: *conf2
   register: result
   tags: sanity
@@ -238,17 +249,22 @@
     - 'result.changed == false'
   tags: sanity
 
-- name: REPLACED - Clean up any existing vrfs
+- name: SANITY- REPLACED - Clean up any existing vrfs
   cisco.dcnm.dcnm_vrf:
     fabric: "{{ test_fabric }}"
     state: deleted
+  tags: sanity
+
+- name: SANITY- Pause for 20 seconds for NDFC to sync
+  ansible.builtin.pause:
+    seconds: 20
   tags: sanity
 
 ###############################################
 ###              OVERRIDDEN                  ##
 ###############################################
 
-- name: OVERRIDDEN - Create, Attach and Deploy new VRF - VLAN Provided by the User
+- name: SANITY- OVERRIDDEN - Create, Attach and Deploy new VRF - VLAN Provided by the User
   cisco.dcnm.dcnm_vrf:
     fabric: "{{ test_fabric }}"
     state: merged
@@ -265,7 +281,7 @@
   register: result
   tags: sanity
 
-- name: Query fabric state until vrfStatus transitions to DEPLOYED state
+- name: SANITY- Query fabric state until vrfStatus transitions to DEPLOYED state
   cisco.dcnm.dcnm_vrf:
     fabric: "{{ test_fabric }}"
     state: query
@@ -291,7 +307,7 @@
     - 'result.diff[0].vrf_name == "ansible-vrf-int1"'
   tags: sanity
 
-- name: OVERRIDDEN - Update existing VRF using overridden - delete and create
+- name: SANITY- OVERRIDDEN - Update existing VRF using overridden - delete and create
   cisco.dcnm.dcnm_vrf: &conf3
     fabric: "{{ test_fabric }}"
     state: overridden
@@ -308,7 +324,7 @@
   register: result
   tags: sanity
 
-- name: Query fabric state until vrfStatus transitions to DEPLOYED state
+- name: SANITY- Query fabric state until vrfStatus transitions to DEPLOYED state
   cisco.dcnm.dcnm_vrf:
     fabric: "{{ test_fabric }}"
     state: query
@@ -340,7 +356,7 @@
     - 'result.diff[1].vrf_name == "ansible-vrf-int1"'
   tags: sanity
 
-- name: OVERRIDDEN - conf - Idempotence
+- name: SANITY- OVERRIDDEN - conf - Idempotence
   cisco.dcnm.dcnm_vrf: *conf3
   register: result
   tags: sanity
@@ -351,17 +367,22 @@
     - 'result.response|length == 0'
   tags: sanity
 
-- name: OVERRIDDEN - Clean up any existing vrfs
+- name: SANITY- OVERRIDDEN - Clean up any existing vrfs
   cisco.dcnm.dcnm_vrf:
     fabric: "{{ test_fabric }}"
     state: deleted
+  tags: sanity
+
+- name: SANITY- Pause for 20 seconds for NDFC to sync
+  ansible.builtin.pause:
+    seconds: 20
   tags: sanity
 
 ###############################################
 ###                QUERY                     ##
 ###############################################
 
-- name: QUERY - Create, Attach and Deploy new VRF - VLAN Provided by the User
+- name: SANITY- QUERY - Create, Attach and Deploy new VRF - VLAN Provided by the User
   cisco.dcnm.dcnm_vrf:
     fabric: "{{ test_fabric }}"
     state: merged
@@ -378,7 +399,7 @@
   register: result
   tags: sanity
 
-- name: Query fabric state until vrfStatus transitions to DEPLOYED state
+- name: SANITY- Query fabric state until vrfStatus transitions to DEPLOYED state
   cisco.dcnm.dcnm_vrf:
     fabric: "{{ test_fabric }}"
     state: query
@@ -404,7 +425,7 @@
     - 'result.diff[0].vrf_name == "ansible-vrf-int1"'
   tags: sanity
 
-- name: QUERY - Query the VRF
+- name: SANITY- QUERY - Query the VRF
   cisco.dcnm.dcnm_vrf:
     fabric: "{{ test_fabric }}"
     state: query
@@ -435,18 +456,23 @@
     - 'result.response[0].attach[1].switchDetailsList[0].vlan == 500'
   tags: sanity
 
-- name: QUERY - Clean up existing vrfs
+- name: SANITY- QUERY - Clean up existing vrfs
   cisco.dcnm.dcnm_vrf:
     fabric: "{{ test_fabric }}"
     state: deleted
   register: result
   tags: sanity
 
+- name: SANITY- Pause for 20 seconds for NDFC to sync
+  ansible.builtin.pause:
+    seconds: 20
+  tags: sanity
+
 ###############################################
 ###                 DELETED                  ##
 ###############################################
 
-- name: DELETED - Create, Attach and Deploy new VRF - VLAN Provided by the User
+- name: SANITY- DELETED - Create, Attach and Deploy new VRF - VLAN Provided by the User
   cisco.dcnm.dcnm_vrf:
     fabric: "{{ test_fabric }}"
     state: merged
@@ -463,7 +489,7 @@
   register: result
   tags: sanity
 
-- name: Query fabric state until vrfStatus transitions to DEPLOYED state
+- name: SANITY- Query fabric state until vrfStatus transitions to DEPLOYED state
   cisco.dcnm.dcnm_vrf:
     fabric: "{{ test_fabric }}"
     state: query
@@ -489,7 +515,7 @@
     - 'result.diff[0].vrf_name == "ansible-vrf-int1"'
   tags: sanity
 
-- name: DELETED - Delete VRF using deleted state
+- name: SANITY- DELETED - Delete VRF using deleted state
   cisco.dcnm.dcnm_vrf: &conf4
     fabric: "{{ test_fabric }}"
     state: deleted
@@ -516,7 +542,7 @@
     - 'result.diff[0].vrf_name == "ansible-vrf-int1"'
   tags: sanity
 
-- name: DELETED - conf - Idempotence
+- name: SANITY- DELETED - conf - Idempotence
   cisco.dcnm.dcnm_vrf: *conf4
   register: result
   tags: sanity

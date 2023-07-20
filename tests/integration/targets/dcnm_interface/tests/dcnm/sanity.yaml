@@ -4,11 +4,11 @@
 ##               SETUP                      ##
 ##############################################
 
-- name: Remove local log file
+- name: SANITY- Remove local log file
   local_action: command rm -f dcnm_intf.log
   tags: sanity
 
-- name: Put the fabric to default state
+- name: SANITY- Put the fabric to default state
   cisco.dcnm.dcnm_interface:
     check_deploy: True
     fabric: "{{ ansible_it_fabric }}" 
@@ -22,7 +22,7 @@
   loop: '{{ result.response }}'
   tags: sanity
 
-- name: Sanity tests
+- name: Sanity tests - 1
   tags: sanity
   block:
 
@@ -30,7 +30,7 @@
 ##                MERGE                     ##
 ##############################################
 
-    - name: Create ethernet interfaces
+    - name: SANITY- Create ethernet interfaces - 1
       cisco.dcnm.dcnm_interface: &eth_merge
         check_deploy: True
         fabric: "{{ ansible_it_fabric }}" 
@@ -135,7 +135,7 @@
 ##              REPLACE                     ##
 ##############################################
 
-    - name: Replace ethernet interfaces
+    - name: SANITY- Replace ethernet interfaces - 1
       cisco.dcnm.dcnm_interface: &eth_replace
         check_deploy: True
         fabric: "{{ ansible_it_fabric }}" 
@@ -228,7 +228,7 @@
           - 'item["RETURN_CODE"] == 200'  
       loop: '{{ result.response }}'
 
-    - name: Replace ethernet interfaces - Idempotence
+    - name: SANITY- Replace ethernet interfaces - 1 - Idempotence
       cisco.dcnm.dcnm_interface: *eth_replace
       register: result
 
@@ -252,7 +252,7 @@
 
   always:
 
-    - name: Put fabric to default state
+    - name: SANITY- Put fabric to default state
       cisco.dcnm.dcnm_interface:
         check_deploy: True
         fabric: "{{ ansible_it_fabric }}" 
@@ -266,18 +266,16 @@
       loop: '{{ result.response }}'
       when: IT_CONTEXT is not defined
 
-
-
-
-
-## LO
-
+- name: Sanity tests - 2
+  tags: sanity
+  block:
 
 ##############################################
 ##                MERGE                     ##
 ##############################################
 
-    - name: Create ethernet interfaces
+
+    - name: SANITY- Create ethernet interfaces - 2
       cisco.dcnm.dcnm_interface: &eth_merge2
         check_deploy: True
         fabric: "{{ ansible_it_fabric }}" 
@@ -382,7 +380,9 @@
 ##              REPLACE                     ##
 ##############################################
 
-    - name: Replace ethernet interfaces
+
+    - name: SANITY- Replace ethernet interfaces - 2
+
       cisco.dcnm.dcnm_interface: &eth_replace2
         check_deploy: True
         fabric: "{{ ansible_it_fabric }}" 
@@ -475,7 +475,8 @@
           - 'item["RETURN_CODE"] == 200'  
       loop: '{{ result.response }}'
 
-    - name: Replace ethernet interfaces - Idempotence
+    - name: SANITY- Replace ethernet interfaces - 2 - Idempotence
+
       cisco.dcnm.dcnm_interface: *eth_replace2
       register: result
 
@@ -499,7 +500,7 @@
 
   always:
 
-    - name: Put fabric to default state
+    - name: SANITY- Put fabric to default state
       cisco.dcnm.dcnm_interface:
         check_deploy: True
         fabric: "{{ ansible_it_fabric }}" 
@@ -513,16 +514,15 @@
       loop: '{{ result.response }}'
       when: IT_CONTEXT is not defined
 
+- name: Sanity tests - 3
+  tags: sanity
+  block:
 
-
-## pc
-
-      
 ##############################################
 ##                MERGE                     ##
 ##############################################
 
-    - name: Create port channel interfaces
+    - name: SANITY- Create port channel interfaces
       cisco.dcnm.dcnm_interface: &pc_merge
         check_deploy: True
         fabric: "{{ ansible_it_fabric }}"
@@ -613,7 +613,7 @@
 ##                REPLACE                   ##
 ##############################################
 
-    - name: Replace port channel interfaces
+    - name: SANITY- Replace port channel interfaces
       cisco.dcnm.dcnm_interface: &pc_replace
         check_deploy: True
         fabric: "{{ ansible_it_fabric }}" 
@@ -692,7 +692,7 @@
           - 'item["RETURN_CODE"] == 200'  
       loop: '{{ result.response }}'
 
-    - name: Replace port channel interfaces - Idempotence
+    - name: SANITY- Replace port channel interfaces - Idempotence
       cisco.dcnm.dcnm_interface: *pc_replace
       register: result
 
@@ -716,7 +716,7 @@
 
   always:
 
-    - name: Put fabric to default state
+    - name: SANITY- Put fabric to default state
       cisco.dcnm.dcnm_interface:
         check_deploy: True
         fabric: "{{ ansible_it_fabric }}" 
@@ -730,15 +730,15 @@
       loop: '{{ result.response }}'
       when: IT_CONTEXT is not defined
 
-
-## sub
-
+- name: Sanity tests - 4
+  tags: sanity
+  block:
 
 ##############################################
 ##                MERGE                     ##
 ##############################################
 
-    - name: Create sub-interfaces
+    - name: SANITY- Create sub-interfaces
       cisco.dcnm.dcnm_interface: &sub_merge
         check_deploy: True
         fabric: "{{ ansible_it_fabric }}" 
@@ -801,7 +801,7 @@
 ##             REPLACE                      ##
 ##############################################
 
-    - name: Replace sub-interfaces
+    - name: SANITY- Replace sub-interfaces
       cisco.dcnm.dcnm_interface: &sub_replace
         check_deploy: True
         fabric: "{{ ansible_it_fabric }}" 
@@ -860,7 +860,7 @@
           - 'item["RETURN_CODE"] == 200'  
       loop: '{{ result.response }}'
 
-    - name: Replace sub-interfaces - Idempotence
+    - name: SANITY- Replace sub-interfaces - Idempotence
       cisco.dcnm.dcnm_interface: *sub_replace
       register: result
 
@@ -884,7 +884,7 @@
 
   always:
 
-    - name: Put fabric to default state
+    - name: SANITY- Put fabric to default state
       cisco.dcnm.dcnm_interface:
         check_deploy: True
         fabric: "{{ ansible_it_fabric }}" 
@@ -898,172 +898,15 @@
       loop: '{{ result.response }}'
       when: IT_CONTEXT is not defined
 
-
-## svi
-
-
-##############################################
-##                MERGE                     ##
-##############################################
-
-    - name: Create SVI interfaces including optional parameters
-      cisco.dcnm.dcnm_interface:
-        check_deploy: True
-        fabric: "{{ ansible_svi_fabric }}"
-        state: merged                                   # only choose form [merged, replaced, deleted, overridden, query]
-        config:
-          - name: vlan1001                              # should be of the form vlan<vlan-id>
-            type: svi                                   # choose from this list [pc, vpc, sub_int, lo, eth, svi]
-            switch:
-              - "{{ ansible_switch1 }}"                 # provide the switch information where the config is to be deployed
-            deploy: true                                # choose from [true, false]
-            profile:
-              int_vrf: blue                             # optional, Interface VRF name, default is "default"
-              ipv4_addr: 192.168.2.1                    # optional, Interfae IP, default is ""
-              ipv4_mask_len: 24                         # optional, IP mask length, default is ""
-              mtu: 9216                                 # optional, MTU default is ""
-              route_tag: 1001                           # optional, Routing TAG, default is ""
-              disable_ip_redirects: true                # optional, flag to enable/disable IP redirects, default is "false"
-              cmds:                                     # Freeform config
-                - no shutdown
-              admin_state: true                         # Flag to enable/disable Vlan interaface
-              enable_hsrp: true                         # optional, flag to enable/disable HSRP on the interface, default is "false"
-              hsrp_vip: 192.168.2.100                   # optional, Virtual IP address for HSRP, default is ""
-              hsrp_group: 10                            # optional, HSRP group, default is ""
-              hsrp_priority: 5                          # optional, HSRP priority, default is ""
-              hsrp_vmac: 0000.0101.ac0a                 # optional, HSRP virtual MAC, default is ""
-              dhcp_server_addr1: 192.200.1.1            # optional, DHCP relay server address, default is ""
-              vrf_dhcp1: blue                           # optional, VRF to reach DHCP server. default is ""
-              dhcp_server_addr2: 192.200.1.2            # optional, DHCP relay server address, default is ""
-              vrf_dhcp2: blue                           # optional, VRF to reach DHCP server. default is ""
-              dhcp_server_addr3: 192.200.1.3            # optional, DHCP relay server address, default is ""
-              vrf_dhcp3: blue                           # optional, VRF to reach DHCP server. default is ""
-              adv_subnet_in_underlay: true              # optional, flag to enable/disable advertisements of subnets into underlay, default is "false"
-              enable_netflow: false                     # optional, flag to enable netflow, default is "false"
-              netflow_monitor: svi1001                  # optional, name of netflow monitor, default is ""
-              hsrp_version: 1                           # optional, HSRP protocol version, default is 1
-              preempt: true                             # optional, flag to enable/disable overthrow of low priority active routers, optional is "false"
-              mode: vlan                                # choose from [vlan, vlan_admin_state], default is "vlan"   
-              description: Switched vlan interface 1001 # optional, Interface description, default is ""
-      register: result
-
-    - assert:
-        that:
-          - 'result.changed == true'
-          - '(result["diff"][0]["merged"] | length) == 1'
-          - '(result["diff"][0]["deleted"] | length) == 0'
-          - '(result["diff"][0]["replaced"] | length) == 0'
-          - '(result["diff"][0]["overridden"] | length) == 0'
-          - '(result["diff"][0]["deploy"] | length) == 1'
-
-    - assert:
-        that:
-          - 'item["RETURN_CODE"] == 200'  
-      loop: '{{ result.response }}'
-
-##############################################
-##              REPLACE                     ##
-##############################################
-
-    - name: Replace SVI interface 
-      cisco.dcnm.dcnm_interface: &svi_replace
-        check_deploy: True
-        fabric: "{{ ansible_svi_fabric }}"
-        state: replaced                                       # only choose form [merged, replaced, deleted, overridden, query]
-        config:
-          - name: vlan1001                                    # should be of the form vlan<vlan-id>
-            type: svi                                         # choose from this list [pc, vpc, sub_int, lo, eth, svi]
-            switch:
-              - "{{ ansible_switch1 }}"                       # provide the switch information where the config is to be deployed
-            deploy: true                                      # choose from [true, false]
-            profile:
-              int_vrf: red                                    # optional, Interface VRF name, default is "default"
-              ipv4_addr: 192.169.2.1                          # optional, Interfae IP, default is ""
-              ipv4_mask_len: 20                               # optional, IP mask length, default is ""
-              mtu: 9210                                       # optional, MTU default is ""
-              route_tag: 1002                                 # optional, Routing TAG, default is ""
-              disable_ip_redirects: false                     # optional, flag to enable/disable IP redirects, default is "false"
-              cmds:                                           # Freeform config
-                - no shutdown
-              admin_state: false                              # Flag to enable/disable Vlan interaface
-              enable_hsrp: true                               # optional, flag to enable/disable HSRP on the interface, default is "false"
-              hsrp_vip: 192.169.2.100                         # optional, Virtual IP address for HSRP, default is ""
-              hsrp_group: 11                                  # optional, HSRP group, default is ""
-              hsrp_priority: 5                                # optional, HSRP priority, default is ""
-              hsrp_vmac: 0000.0102.ac0a                       # optional, HSRP virtual MAC, default is ""
-              dhcp_server_addr1: 193.200.1.1                  # optional, DHCP relay server address, default is ""
-              vrf_dhcp1: green                                # optional, VRF to reach DHCP server. default is ""
-              dhcp_server_addr2: 193.200.1.2                  # optional, DHCP relay server address, default is ""
-              vrf_dhcp2: green                                # optional, VRF to reach DHCP server. default is ""
-              dhcp_server_addr3: 193.200.1.3                  # optional, DHCP relay server address, default is ""
-              vrf_dhcp3: green                                # optional, VRF to reach DHCP server. default is ""
-              adv_subnet_in_underlay: false                   # optional, flag to enable/disable advertisements of subnets into underlay, default is "false"
-              enable_netflow: false                           # optional, flag to enable netflow, default is "false"
-              netflow_monitor: svi1002                        # optional, name of netflow monitor, default is ""
-              hsrp_version: 2                                 # optional, HSRP protocol version, default is 1
-              preempt: false                                  # optional, flag to enable/disable overthrow of low priority active routers, optional is "false"
-              mode: vlan                                      # choose from [vlan, vlan_admin_state], default is "vlan"   
-              description: Switched vlan interface 1001 - Rep # optional, Interface description, default is ""
-      register: result
-
-    - assert:
-        that:
-          - 'result.changed == true'
-          - '(result["diff"][0]["merged"] | length) == 0'
-          - '(result["diff"][0]["deleted"] | length) == 0'
-          - '(result["diff"][0]["replaced"] | length) == 1'
-          - '(result["diff"][0]["overridden"] | length) == 0'
-          - '(result["diff"][0]["deploy"] | length) == 1'
-
-    - assert:
-        that:
-          - 'item["RETURN_CODE"] == 200'  
-      loop: '{{ result.response }}'
-
-    - name: Replace SVI interfaces - Idempotence
-      cisco.dcnm.dcnm_interface: *svi_replace
-      register: result
-
-    - assert:
-        that:
-          - 'result.changed == false'
-          - '(result["diff"][0]["merged"] | length) == 0'
-          - '(result["diff"][0]["deleted"] | length) == 0'
-          - '(result["diff"][0]["replaced"] | length) == 0'
-          - '(result["diff"][0]["overridden"] | length) == 0'
-          - '(result["diff"][0]["deploy"] | length) == 0'
-
-    - assert:
-        that:
-          - 'item["RETURN_CODE"] == 200'  
-      loop: '{{ result.response }}'
-
-##############################################
-##             CLEANUP                      ##
-##############################################
-
-  always:
-
-    - name: Put fabric to default state
-      cisco.dcnm.dcnm_interface:
-        check_deploy: True
-        fabric: "{{ ansible_svi_fabric }}" 
-        state: overridden                     # only choose form [merged, replaced, deleted, overridden, query]
-      register: result
-      when: IT_CONTEXT is not defined
-
-    - assert:
-        that:
-          - 'item["RETURN_CODE"] == 200'  
-      loop: '{{ result.response }}'
-      when: IT_CONTEXT is not defined
-
+- name: Sanity tests - 5
+  tags: sanity
+  block:
 
 ##############################################
 ##              MERGE                       ##
 ##############################################
 
-    - name: Create eth/sub/lo interfaces
+    - name: SANITY- Create eth/sub/lo interfaces
       cisco.dcnm.dcnm_interface:
         check_deploy: True
         fabric: "{{ ansible_it_fabric }}" 
@@ -1136,7 +979,7 @@
           - 'item["RETURN_CODE"] == 200'  
       loop: '{{ result.response }}'
 
-    - name: Modify aggregate members like cmds
+    - name: SANITY- Modify aggregate members like cmds
       cisco.dcnm.dcnm_interface:
         check_deploy: True
         fabric: "{{ ansible_it_fabric }}" 
@@ -1218,7 +1061,7 @@
 
   always:
 
-    - name: Put fabric to default state
+    - name: SANITY- Put fabric to default state
       cisco.dcnm.dcnm_interface:
         check_deploy: True
         fabric: "{{ ansible_svi_fabric }}" 

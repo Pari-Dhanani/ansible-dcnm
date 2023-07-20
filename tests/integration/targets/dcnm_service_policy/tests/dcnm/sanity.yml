@@ -2,11 +2,11 @@
 ##               SETUP                      ##
 ##############################################
 
-- name: Remove local log file
+- name: SANITY- Remove local log file
   local_action: command rm -f sp.log
   #tags: sanity
 
-- name: Delete service policies
+- name: SANITY- Delete service policies
   cisco.dcnm.dcnm_service_policy: &dcnm_sp_del_all
     fabric: "{{ ansible_it_fabric }}"                     # mandatory
     service_fabric: "{{ ansible_it_service_fabric }}"     # mandatory
@@ -42,7 +42,7 @@
 ##                MERGE                     ##
 ##############################################
 
-    - name: Create service policy including all optional objects
+    - name: SANITY- Create service policy including all optional objects
       cisco.dcnm.dcnm_service_policy: &dcnm_sp_create_all
         fabric: "{{ ansible_it_fabric }}"                     # mandatory
         service_fabric: "{{ ansible_it_service_fabric }}"     # mandatory
@@ -160,7 +160,7 @@
           - '(result["diff"][0]["query"] | length) == 0'
           - '(result["diff"][0]["deploy"] | length) == 5'
 
-    - name: Query service policies based on service node and policy name
+    - name: SANITY- Query service policies based on service node and policy name
       cisco.dcnm.dcnm_service_policy: 
         fabric: "{{ ansible_it_fabric }}"                     # mandatory
         service_fabric: "{{ ansible_it_service_fabric }}"     # mandatory
@@ -198,7 +198,7 @@
 ##               OVERRRIDE                  ##
 ##############################################
 
-    - name: Override and delete all service policies without any new one
+    - name: SANITY- Override and delete all service policies without any new one
       cisco.dcnm.dcnm_service_policy:
         fabric: "{{ ansible_it_fabric }}"                     # mandatory
         service_fabric: "{{ ansible_it_service_fabric }}"     # mandatory
@@ -223,7 +223,7 @@
 ##                MERGE                     ##
 ##############################################
 
-    - name: Create service policy including all optional objects
+    - name: SANITY- Create service policy including all optional objects
       cisco.dcnm.dcnm_service_policy:
         fabric: "{{ ansible_it_fabric }}"                     # mandatory
         service_fabric: "{{ ansible_it_service_fabric }}"     # mandatory
@@ -287,7 +287,7 @@
 ##               REPLACE                    ##
 ##############################################
 
-    - name: Replace some of the objects in already created policy
+    - name: SANITY- Replace some of the objects in already created policy
       cisco.dcnm.dcnm_service_policy: &dcnm_sp_replace_all
         fabric: "{{ ansible_it_fabric }}"                     # mandatory
         service_fabric: "{{ ansible_it_service_fabric }}"     # mandatory
@@ -346,7 +346,7 @@
           - 'item["RETURN_CODE"] == 200'
       loop: '{{ result.response }}'
 
-    - name: Replace service policies  - Idempotence
+    - name: SANITY- Replace service policies  - Idempotence
       cisco.dcnm.dcnm_service_policy: *dcnm_sp_replace_all
       register: result
 
@@ -365,7 +365,7 @@
 
   always:
 
-    - name: Delete service policies
+    - name: SANITY- Delete service policies
       cisco.dcnm.dcnm_service_policy: *dcnm_sp_del_all
       register: result
       when: IT_CONTEXT is not defined
