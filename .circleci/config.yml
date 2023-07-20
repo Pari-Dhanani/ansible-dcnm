@@ -1,5 +1,4 @@
 version: 2.1
-
 setup: << pipeline.parameters.run-setup >>
 
 orbs:
@@ -7,14 +6,10 @@ orbs:
 
 
 parameters:
+  
   run-setup:
     type: boolean
     default: true
-
-#   run-module-a:
-#     type: boolean
-#     default: false
-
   run-inventory:
     type: boolean
     default: false
@@ -31,9 +26,6 @@ parameters:
     type: boolean
     default: false
   run-resource_manager:
-    type: boolean
-    default: false
-  run-rest:
     type: boolean
     default: false
   run-service_node:
@@ -57,183 +49,282 @@ parameters:
   run-all:
     type: boolean
     default: false
+  run-any:
+    type: boolean
+    default: false
+  run-prep-release:
+    type: boolean
+    default: false
 
 jobs:
   build:
-    parameters:
+    parameters:      
       ansible_version:
         type: string
 
-    working_directory: ~/repo
-
+    working_directory: ~/repo 
     machine: true
     resource_class: cisco/ansible-dcnm
 
     steps:
       - checkout
+
       - run:
-          name: "Say hello"
-          command: "env"
+          name: Create Roles File header
+          command: |
+            echo "---" > dcnm_roles.yaml
+            echo "- hosts: dcnm" >> dcnm_roles.yaml
+            echo "  gather_facts: no" >> dcnm_roles.yaml
+            echo "  connection: ansible.netcommon.httpapi" >> dcnm_roles.yaml
+            echo "  " >> dcnm_roles.yaml
+            echo "  tasks:" >> dcnm_roles.yaml
+            echo "  " >> dcnm_roles.yaml
+            echo "  vars:" >> dcnm_roles.yaml
+            echo "    debug: false" >> dcnm_roles.yaml
+            echo "  " >> dcnm_roles.yaml
+            echo "  roles:" >> dcnm_roles.yaml
+
+            cat dcnm_roles.yaml
+            pwd
+            ls -l
+      - run:
+          name: Copy static files
+          command: |
+           
+            cp /home/circleci/static/dcnm.yaml group_vars/dcnm.yaml
+            cp /home/circleci/static/hosts hosts
+
+      - run:
+          name: Activate Python 3.11 Environment, Install ansible and Build collection tarball
+          command: |
+            export PYENV_ROOT="/home/circleci/.pyenv"
+            export PATH="$PYENV_ROOT/bin:$PATH"
+            export PATH="$PYENV_ROOT/shims/python3:$PATH"
+            export PATH="$PYENV_ROOT/shims/python:$PATH"
+            export PYTHONPATH="$PYENV_ROOT/shims/python3:$PYTHONPATH"
+            export PYTHONPATH="$PYENV_ROOT/shims/python:$PYTHONPATH"
+
+            pyenv local python_3.11
+
+            #pip install https://github.com/ansible/ansible/archive/v<< parameters.ansible_version >>.tar.gz --disable-pip-version-check
+            ansible --version
+            pyenv versions
+            ansible-galaxy collection build --force --output-path "${HOME}/.cache/v<< parameters.ansible_version >>/collection-tarballs"
+            pip install pytest==5.4.1
+            pip install coverage==4.5.4
+            
+            pyenv local system
+
+  addrole:
+    parameters:
+      modulename:
+        type: string
+
+    working_directory: ~/repo
+    machine: true
+    resource_class: cisco/ansible-dcnm
+
+    steps:
+      - checkout
+
+      - run:
+          name: Adding role- << parameters.modulename >>
+          command: |
+            export MODULENAME="<< parameters.modulename >>"
+            echo "    - dcnm_$MODULENAME" >> dcnm_roles.yaml
+            pwd
+            ls -l
+            cat dcnm_roles.yaml
+
+  sanity-tests:
+    parameters:
+      ansible_version:
+        type: string
+      py_version:
+        type: string
+
+    working_directory: ~/repo
+    machine: true
+    resource_class: cisco/ansible-dcnm
+
+    steps:
+      - checkout
+
+      - run:
+          name: Activating Python << parameters.py_version >> env
+          command: |
+            export PYENV_ROOT="/home/circleci/.pyenv"
+            export PATH="$PYENV_ROOT/bin:$PATH"
+            export PATH="$PYENV_ROOT/shims/python3:$PATH"
+            export PATH="$PYENV_ROOT/shims/python:$PATH"
+            export PYTHONPATH="$PYENV_ROOT/shims/python3:$PYTHONPATH"
+            export PYTHONPATH="$PYENV_ROOT/shims/python:$PYTHONPATH"
+
+            export PATH="/home/circleci/.ansible/collections/:$PATH"
+            export PYTHONPATH="/home/circleci/.ansible/collections/:$PYTHONPATH"
+
+            pyenv local python_<< parameters.py_version >>
+     
+            cat dcnm_roles.yaml
+            
+
+          environment:
+            PYTHONPATH: /home/circleci/.ansible/collections/:$PYTHONPATH
+
+
+      - run:
+          name: Install ansible-base (v<< parameters.ansible_version >>)
+          command: pip install https://github.com/ansible/ansible/archive/v<< parameters.ansible_version >>.tar.gz --disable-pip-version-check
+      
           
+      - run:
+          name: Install the collection tarball
+          command: |
+            pyenv versions
+            python --version
+            ansible --version  
+            ansible-galaxy collection install --force ${HOME}/.cache/v<< parameters.ansible_version >>/collection-tarballs/*.tar.gz
 
 
-  all-unit_job:
+
+      - run:
+          name: Run sanity tests py << parameters.py_version >>
+          command: |
+            export ANSIBLE_ROLES_PATH=/home/circleci/repo/tests/integration/targets/
+            export ANSIBLE_PERSISTENT_CONNECT_TIMEOUT=1000
+            export ANSIBLE_PERSISTENT_COMMAND_TIMEOUT=1000
+            env
+            ansible-playbook -i hosts dcnm_roles.yaml --tags sanity -vvvv
+
+
+
+  unit-tests:
+    parameters:
+      ansible_version:
+        type: string
+      py_version:
+        type: string
+    
+    working_directory: ~/repo
+    machine: true
+    resource_class: cisco/ansible-dcnm
+
+    steps:
+      - checkout
+      
+      - run:
+          name: Activating Python << parameters.py_version >> env
+          command: |
+            export PYENV_ROOT="/home/circleci/.pyenv"
+            export PATH="$PYENV_ROOT/bin:$PATH"
+            export PATH="$PYENV_ROOT/shims/python3:$PATH"
+            export PATH="$PYENV_ROOT/shims/python:$PATH"
+            export PYTHONPATH="$PYENV_ROOT/shims/python3:$PYTHONPATH"
+            export PYTHONPATH="$PYENV_ROOT/shims/python:$PYTHONPATH"
+
+            export PATH="/home/circleci/.ansible/collections/:$PATH"
+            export PYTHONPATH="/home/circleci/.ansible/collections/:$PYTHONPATH"
+            
+
+            pyenv local python_<< parameters.py_version >>
+
+          environment:
+            PYTHONPATH: /home/circleci/.ansible/collections/:$PYTHONPATH
+
+
+      - run:
+          name: Install ansible-base (v<< parameters.ansible_version >>)
+          command: pip install https://github.com/ansible/ansible/archive/v<< parameters.ansible_version >>.tar.gz --disable-pip-version-check
+
+
+      - run:
+          name: Install the collection tarball
+          command: ansible-galaxy collection install --force ${HOME}/.cache/v<< parameters.ansible_version >>/collection-tarballs/*.tar.gz
+
+      - run:
+          name: Run DCNM Unit tests
+          command: |
+            export PATH="/home/circleci/.ansible/collections/:$PATH"
+            export PYTHONPATH="/home/circleci/.ansible/collections/:$PYTHONPATH"
+            coverage run --source=. -m pytest tests/unit/modules/dcnm/. -vvvv
+
+
+  update-files:
+
     working_directory: ~/repo
     machine: true
     resource_class: cisco/ansible-dcnm
     steps:
+      - checkout
       - run:
-          name: Run all Unit tests
+          name: Update galaxy.yml, CHANGELOG.md and README.md files
           command: |
-            echo Hello, Unit!
+            python3 /home/circleci/static/releaseparser.py
+          
+      - run:
+          name: Create new branch and raise PR against main
+          command: |
+            source temp.txt
+            git checkout -b $COLLECTION_VERSION
+            git add CHANGELOG.md
+            git add README.md
+            git add galaxy.yml
+            git status
+            echo "======="
+            git commit -m "Released new version: $COLLECTION_VERSION"
+            git status
+            git push -u origin $COLLECTION_VERSION
+            gh pr create --base main --head $COLLECTION_VERSION --title "Release $COLLECTION_VERSION" --body "Release $COLLECTION_VERSION"
 
-  inventory_job:
+  tag-release:
+
     working_directory: ~/repo
     machine: true
     resource_class: cisco/ansible-dcnm
     steps:
+      - checkout
       - run:
-          name: Run inventory Unit tests
+          name: Create Tag and Release on gh and then publish to ansible-galaxy
           command: |
-            echo Hello, inventory!
-
-  interface_job:
-    working_directory: ~/repo
-    machine: true
-    resource_class: cisco/ansible-dcnm
-    steps:
-      - run:
-          name: Run interface Unit tests
-          command: |
-            echo Hello!
-
-  links_job:
-    working_directory: ~/repo
-    machine: true
-    resource_class: cisco/ansible-dcnm
-    steps:
-      - run:
-          name: Run links Unit tests
-          command: |
-            echo Hello!
-
-  network_job:
-    working_directory: ~/repo
-    machine: true
-    resource_class: cisco/ansible-dcnm
-    steps:
-      - run:
-          name: Run network Unit tests
-          command: |
-            echo Hello!
-
-  policy_job:
-    working_directory: ~/repo
-    machine: true
-    resource_class: cisco/ansible-dcnm
-    steps:
-      - run:
-          name: Run policy Unit tests
-          command: |
-            echo Hello!
-
-  resource_manager_job:
-    working_directory: ~/repo
-    machine: true
-    resource_class: cisco/ansible-dcnm
-    steps:
-      - run:
-          name: Run resource manager Unit tests
-          command: |
-            echo Hello!
-
-  rest_job:
-    working_directory: ~/repo
-    machine: true
-    resource_class: cisco/ansible-dcnm
-    steps:
-      - run:
-          name: Run rest Unit tests
-          command: |
-            echo Hello!
-
-  service_node_job:
-    working_directory: ~/repo
-    machine: true
-    resource_class: cisco/ansible-dcnm
-    steps:
-      - run:
-          name: Run service node Unit tests
-          command: |
-            echo Hello!
-
-  service_policy_job:
-    working_directory: ~/repo
-    machine: true
-    resource_class: cisco/ansible-dcnm
-    steps:
-      - run:
-          name: Run Service Policy Unit tests
-          command: |
-            echo Hello!
-
-  service_route_peering_job:
-    working_directory: ~/repo
-    machine: true
-    resource_class: cisco/ansible-dcnm
-    steps:
-      - run:
-          name: Run Service Route Peering Unit tests
-          command: |
-            echo Hello!
-
-  template_job:
-    working_directory: ~/repo
-    machine: true
-    resource_class: cisco/ansible-dcnm
-    steps:
-      - run:
-          name: Run Template Unit tests
-          command: |
-            echo Hello!
-
-  vrf_job:
-    working_directory: ~/repo
-    machine: true
-    resource_class: cisco/ansible-dcnm
-    steps:
-      - run:
-          name: Run VRF Unit tests
-          command: |
-            echo Hello!
-
+            source temp.txt
+            git checkout main
+            git tag -a $COLLECTION_VERSION -m "Ansible NDFC Collection Version $COLLECTION_VERSION"
+            git push origin --tags
+            gh release create v1.2.3 -F CHANGELOG.md
+            ansible-galaxy collection build
+            mkdir ./tmp/
+            ansible-galaxy collection install cisco-dcnm-$COLLECTION_VERSION.tar.gz -p ./tmp/
+            ansible-galaxy collection publish ./cisco-dcnm-3.3.1.tar.gz --api-key
+            rm temp.txt
 
 
 workflows:
   pre:
     when: << pipeline.parameters.run-setup >>
     jobs:
-
       - build:
           matrix:
             parameters:
               ansible_version:
-              - 2.9.26
-              - 2.10.17
-              - 2.11.12
-              - 2.12.10
-              - 2.13.8
-              - 2.14.2
+            #  - 2.9.26
+            #  - 2.10.17
+            #  - 2.11.12
+            #  - 2.12.10
+            #  - 2.13.8
+            #  - 2.14.2
+              - 2.13.6
 
       - path-filtering/filter:
           requires:
             - build
-          # Compare files on main
+          # Compare files on develop
           base-revision: develop
           # Config for continuation; herein we reuse this config itself
           config-path: .circleci/config.yml
+          # 3-column space-separated table for mapping; `path-to-test parameter-to-set value-for-parameter` for each row
           mapping: |
             .* run-setup false
+            .* run-any true
             plugins/httpapi/.* run-all true
             plugins/module_utils/.* run-all true
             plugins/action/dcnm_interface.py run-interface true
@@ -252,6 +343,7 @@ workflows:
             plugins/modules/dcnm_template.py run-template true
             plugins/modules/dcnm_vrf.py run-vrf true
 
+            releaseinfo.yaml run-prep-release true
             tests/unit/modules/dcnm run-all-unit true
 
             tests/integration/targets/dcnm_inventory/.* run-inventory true
@@ -273,16 +365,66 @@ workflows:
             tests/integration/targets/prepare_dcnm_service_route_peering/tasks/.* run-service_route_peering true
             tests/integration/targets/prepare_dcnm_template/tasks/.* run-template true
 
-            # module-a/.* run-module-a true
-            # module-b/.* run-module-b true
+
+          # module-a/.* run-module-a true
+          # module-b/.* run-module-b true
 
   all-unit:
     when: 
+      # or:
+      #   - << pipeline.parameters.run-all >>
+        << pipeline.parameters.run-all-unit >>
+    jobs:
+      - unit-tests:
+          matrix:
+            parameters:
+              py_version:
+              #  - "3.8"
+                - "3.11"
+              ansible_version:
+              #  - 2.9.26
+              #  - 2.10.17
+              #  - 2.11.12
+              #  - 2.12.10
+              #  - 2.13.8
+                - 2.13.6
+
+
+  vrf:
+    when:
       or:
         - << pipeline.parameters.run-all >>
-        - << pipeline.parameters.run-all-unit >>
+        - << pipeline.parameters.run-vrf >>
     jobs:
-      - all-unit_job
+      - addrole:
+          matrix:
+            parameters:
+              modulename:
+                - vrf
+
+  links:
+    when:
+      or:
+        - << pipeline.parameters.run-all >>
+        - << pipeline.parameters.run-links >>
+    jobs:
+      - addrole:
+          matrix:
+            parameters:
+              modulename:
+                - links
+
+  network:
+    when:
+      or:
+        - << pipeline.parameters.run-all >>
+        - << pipeline.parameters.run-network >>
+    jobs:
+      - addrole:
+          matrix:
+            parameters:
+              modulename:
+                - network
 
 
   interface:
@@ -291,42 +433,35 @@ workflows:
         - << pipeline.parameters.run-all >>
         - << pipeline.parameters.run-interface >>
     jobs:
-      - interface_job
+      - addrole:
+          matrix:
+            parameters:
+              modulename:
+                - interface
+
   inventory:
     when: 
       or:
         - << pipeline.parameters.run-all >>
         - << pipeline.parameters.run-inventory >>
     jobs:
-      - inventory_job
-  vrf:
-    when:
-      or:
-        - << pipeline.parameters.run-all >>
-        - << pipeline.parameters.run-vrf >>
-    jobs:
-      - vrf_job
-  links:
-    when:
-      or:
-        - << pipeline.parameters.run-all >>
-        - << pipeline.parameters.run-links >>
-    jobs:
-      - links_job
-  network:
-    when:
-      or:
-        - << pipeline.parameters.run-all >>
-        - << pipeline.parameters.run-network >>
-    jobs:
-      - network_job
+      - addrole:
+          matrix:
+            parameters:
+              modulename:
+                - inventory
+
   policy:
     when:
       or:
         - << pipeline.parameters.run-all >>
         - << pipeline.parameters.run-policy >>
     jobs:
-      - policy_job
+      - addrole:
+          matrix:
+            parameters:
+              modulename:
+                - policy
 
   resource_manager:
     when:
@@ -334,7 +469,11 @@ workflows:
         - << pipeline.parameters.run-all >>
         - << pipeline.parameters.run-resource_manager >>
     jobs:
-      - resource_manager_job
+      - addrole:
+          matrix:
+            parameters:
+              modulename:
+                - resource_manager
 
   service_node:
     when:
@@ -342,15 +481,28 @@ workflows:
         - << pipeline.parameters.run-all >>
         - << pipeline.parameters.run-service_node >>
     jobs:
-      - service_node_job
+      - addrole:
 
-  service_policy:
-    when:
-      or:
-        - << pipeline.parameters.run-all >>
-        - << pipeline.parameters.run-service_policy >>
-    jobs:
-      - service_policy_job
+          matrix:
+            parameters:
+              modulename:
+                - service_node
+
+
+#  service_policy:
+#    when:
+#      or:
+#        - << pipeline.parameters.run-all >>
+#        - << pipeline.parameters.run-service_policy >>
+#    jobs:
+#      - addrole:
+
+#          matrix:
+#            parameters:
+#              modulename:
+#                - service_policy
+
+      
 
   service_route_peering:
     when:
@@ -358,7 +510,12 @@ workflows:
         - << pipeline.parameters.run-all >>
         - << pipeline.parameters.run-service_route_peering >>
     jobs:
-      - service_route_peering_job
+      - addrole:
+
+          matrix:
+            parameters:
+              modulename:
+                - service_route_peering
 
   template:
     when:
@@ -366,14 +523,39 @@ workflows:
         - << pipeline.parameters.run-all >>
         - << pipeline.parameters.run-template >>
     jobs:
-      - template_job
+      - addrole:
 
-  rest:
-    when: 
-      or:
-        - << pipeline.parameters.run-all >>
-        - << pipeline.parameters.run-rest >>
+          matrix:
+            parameters:
+              modulename:
+                - template
+
+
+  sanity:
+    when: << pipeline.parameters.run-any >>
     jobs:
-      - rest_job
+      - sanity-tests:
+          matrix:
+            parameters:
+              py_version:
+              #  - "3.8"
+                - "3.11"
+              ansible_version:
+              #  - 2.9.26
+              #  - 2.10.17
+              #  - 2.11.12
+              #  - 2.12.10
+              #  - 2.13.8
+                - 2.13.6
 
-
+  prep-release:
+    when: << pipeline.parameters.run-prep-release >>
+    jobs:
+      - update-files:
+          filters:
+            branches:
+              only: develop
+      - tag-release:
+          type: approval
+          requires: 
+            - update-files
