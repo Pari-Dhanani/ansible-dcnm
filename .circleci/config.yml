@@ -380,6 +380,7 @@ workflows:
           config-path: .circleci/config.yml
           # 3-column space-separated table for mapping; `path-to-test parameter-to-set value-for-parameter` for each row
           mapping: |
+            .* run-setup false
             releaseinfo.yaml run-prep-release true
 
   all-unit:
