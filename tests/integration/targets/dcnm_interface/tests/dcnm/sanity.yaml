@@ -274,6 +274,7 @@
 ##                MERGE                     ##
 ##############################################
 
+
     - name: SANITY- Create ethernet interfaces - 2
       cisco.dcnm.dcnm_interface: &eth_merge2
         check_deploy: True
@@ -379,7 +380,9 @@
 ##              REPLACE                     ##
 ##############################################
 
+
     - name: SANITY- Replace ethernet interfaces - 2
+
       cisco.dcnm.dcnm_interface: &eth_replace2
         check_deploy: True
         fabric: "{{ ansible_it_fabric }}" 
@@ -473,6 +476,7 @@
       loop: '{{ result.response }}'
 
     - name: SANITY- Replace ethernet interfaces - 2 - Idempotence
+
       cisco.dcnm.dcnm_interface: *eth_replace2
       register: result
 
