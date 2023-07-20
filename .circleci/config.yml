@@ -527,8 +527,4 @@ workflows:
               #  - 2.13.8
                 - 2.13.6
 
-  deploy:
-    when: << pipeline.parameters.run-deploy >>
-    jobs:
-      - update-files
 
