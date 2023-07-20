@@ -1,5 +1,5 @@
-version: "1.2.3"
-release_title: "Ansible ndfc 1.2.3"
+version: "1.2.8"
+release_title: "Ansible ndfc 1.2.8"
 release_desc: "Cisco Ansible DCNM Collection"
 changes: 
   added:
