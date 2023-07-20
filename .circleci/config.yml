@@ -315,6 +315,9 @@ workflows:
               - 2.13.6
 
       - path-filtering/filter:
+          filters:
+            branches:
+              ignore: develop
           requires:
             - build
           # Compare files on develop
