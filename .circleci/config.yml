@@ -52,7 +52,9 @@ parameters:
   run-any:
     type: boolean
     default: false
-
+  run-deploy:
+    type: boolean
+    default: false
 
 jobs:
   build:
@@ -247,6 +249,34 @@ jobs:
             coverage run --source=. -m pytest tests/unit/modules/dcnm/. -vvvv
 
 
+  update-files:
+
+    working_directory: ~/repo
+    machine: true
+    resource_class: cisco/ansible-dcnm
+    steps:
+      - checkout
+      - run:
+          name: Update galaxy.yml, CHANGELOG.md and README.md files
+          command: |
+            python3 /home/circleci/static/releaseparser.py
+          
+      - run:
+          name: Create new branch and raise PR against main
+          command: |
+            source temp.txt
+            git checkout -b $COLLECTION_VERSION
+            git add CHANGELOG.md
+            git add README.md
+            git add galaxy.yml
+            git commit -m "Released new version: $COLLECTION_VERSION"
+            git status
+            git push -u origin $COLLECTION_VERSION
+            gh pr create --base main --head $COLLECTION_VERSION
+            rm temp.txt
+
+
+
 workflows:
   pre:
     when: << pipeline.parameters.run-setup >>
@@ -292,6 +322,7 @@ workflows:
             plugins/modules/dcnm_template.py run-template true
             plugins/modules/dcnm_vrf.py run-vrf true
 
+            releaseinfo.yaml run-deploy true
             tests/unit/modules/dcnm run-all-unit true
 
             tests/integration/targets/dcnm_inventory/.* run-inventory true
@@ -357,7 +388,6 @@ workflows:
         - << pipeline.parameters.run-links >>
     jobs:
       - addrole:
-
           matrix:
             parameters:
               modulename:
@@ -497,4 +527,8 @@ workflows:
               #  - 2.13.8
                 - 2.13.6
 
+  deploy:
+    when: << pipeline.parameters.run-deploy >>
+    jobs:
+      - update-files
 
