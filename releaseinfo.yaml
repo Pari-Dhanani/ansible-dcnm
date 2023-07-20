@@ -1,10 +1,11 @@
-version: "1.2.10"
-release_title: "Ansible ndfc 1.2.10"
+version: "1.2.11"
+release_title: "Ansible ndfc 1.2.11"
 release_desc: "Cisco Ansible DCNM Collection"
 changes: 
   added:
     - "Support to configure multiple interfaces for vrf_lite on a vrf"
     - "Added support for more switch roles in inventory module."
+    - "Change 3"
   
   fixed: 
     - "https://github.com/CiscoDevNet/ansible-dcnm/issues/204"
