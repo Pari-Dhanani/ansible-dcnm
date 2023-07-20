@@ -284,12 +284,15 @@ jobs:
     resource_class: cisco/ansible-dcnm
     steps:
       - checkout
+
       - add_ssh_keys:
           fingerprints:
-            - "86:8f:9e:6b:83:f4:70:9a:e9:af:77:3d:55:fa:21:da"
+            - "30:a4:04:2a:24:5d:53:a3:54:b0:d6:a1:9e:97:bf:9a"
+
       - run:
           name: Create Tag and Release on gh and then publish to ansible-galaxy
           command: |
+          
             source temp.txt
             git checkout main
             git tag -a $COLLECTION_VERSION -m "Ansible NDFC Collection Version $COLLECTION_VERSION"
