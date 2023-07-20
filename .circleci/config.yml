@@ -273,8 +273,9 @@ jobs:
             echo "======="
             git commit -m "Released new version: $COLLECTION_VERSION"
             git status
+            echo "Pushing $COLLECTION_VERSION"
             git push origin $COLLECTION_VERSION
-            gh pr create --base main --head $COLLECTION_VERSION --title "Release $COLLECTION_VERSION" --body "Release $COLLECTION_VERSION"
+            gh pr create --base main --head $COLLECTION_VERSION --title 'Release $COLLECTION_VERSION' --body 'Release $COLLECTION_VERSION'
 
   tag-release:
 
