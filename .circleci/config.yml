@@ -83,6 +83,8 @@ jobs:
             echo "  roles:" >> dcnm_roles.yaml
 
             cat dcnm_roles.yaml
+            pwd
+            ls -l
       - run:
           name: Copy static files
           command: |
@@ -128,6 +130,9 @@ jobs:
           command: |
             export MODULENAME="<< parameters.modulename >>"
             echo "    - dcnm_$MODULENAME" >> dcnm_roles.yaml
+            pwd
+            ls -l
+            cat dcnm_roles.yaml
 
   sanity-tests:
     parameters:

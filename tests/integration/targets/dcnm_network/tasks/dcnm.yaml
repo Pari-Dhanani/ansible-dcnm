@@ -10,7 +10,7 @@
 - set_fact:
     test_cases:
       files: "{{ dcnm_cases.files }}"
-  tags: sanity    
+  tags: sanity
 
 - name: set test_items
   set_fact: test_items="{{ test_cases.files | map(attribute='path') | list }}"
@@ -21,4 +21,10 @@
   with_items: "{{ test_items }}"
   loop_control:
     loop_var: test_case_to_run
-  tags: sanity  
+  tags: sanity
+
+- name: DELETED - Clean up any existing vrfs
+  cisco.dcnm.dcnm_vrf:
+    fabric: "{{ test_fabric }}"
+    state: deleted
+  tags: sanity
