@@ -275,7 +275,7 @@ jobs:
             git status
             echo "Pushing $COLLECTION_VERSION"
             git push origin $COLLECTION_VERSION
-            gh pr create --base main --head $COLLECTION_VERSION --title 'Release $COLLECTION_VERSION' --body 'Release $COLLECTION_VERSION'
+            gh pr create --base main --head $COLLECTION_VERSION --title "Release $COLLECTION_VERSION" --body "Release $COLLECTION_VERSION"
 
   tag-release:
 
@@ -301,7 +301,7 @@ jobs:
             ansible-galaxy collection build
             mkdir ./tmp/
             ansible-galaxy collection install cisco-dcnm-$COLLECTION_VERSION.tar.gz -p ./tmp/
-            ansible-galaxy collection publish ./cisco-dcnm-3.3.1.tar.gz --api-key
+            # ansible-galaxy collection publish ./cisco-dcnm-3.3.1.tar.gz --api-key=
             rm temp.txt
 
 
