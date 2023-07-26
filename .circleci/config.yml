@@ -217,7 +217,16 @@ jobs:
             git checkout -b $COLLECTION_VERSION
             git push origin $COLLECTION_VERSION
             gh pr create --base main --head $COLLECTION_VERSION --title "Release $COLLECTION_VERSION" --body "Release $COLLECTION_VERSION"
-
+  
+  finish-merge:
+    working_directory: ~/release
+    machine: true
+    resource_class: cisco/ansible-dcnm
+    steps:
+      - run:
+          name: Approve
+          command: echo "Done"
+                
   tag-release:
 
     working_directory: ~/release
@@ -502,7 +511,13 @@ workflows:
           filters:
             branches:
               only: develop
-      - tag-release:
+              
+      - finish-merge:
           type: approval
           requires: 
             - update-files
+
+      - tag-release:
+          requires: 
+            - finish-merge      
+
