@@ -106,9 +106,12 @@ jobs:
 
             pyenv local python_3.11
 
-            #pip install https://github.com/ansible/ansible/archive/v<< parameters.ansible_version >>.tar.gz --disable-pip-version-check
+            pip install https://github.com/ansible/ansible/archive/v<< parameters.ansible_version >>.tar.gz --disable-pip-version-check
             ansible --version
             pyenv versions
+
+            rm -r ${HOME}/.cache/v<< parameters.ansible_version >>/
+
             ansible-galaxy collection build --force --output-path "${HOME}/.cache/v<< parameters.ansible_version >>/collection-tarballs"
             pip install pytest==5.4.1
             pip install coverage==4.5.4
