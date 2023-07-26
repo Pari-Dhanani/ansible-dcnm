@@ -1,9 +1,9 @@
-version: "3.30.49"
-release_title: "Ansible ndfc 3.30.49"
+version: "3.30.50"
+release_title: "Ansible ndfc 3.30.50"
 release_desc: "Cisco Ansible DCNM Collection"
 changes: 
   added:
-    - "Support to configure 49 multiple interfaces for vrf_lite on a vrf"
+    - "Support to configure 50 multiple interfaces for vrf_lite on a vrf"
     - "Added support for more switch roles in inventory module."
     - "Change 3"
   
