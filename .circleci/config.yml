@@ -326,7 +326,7 @@ workflows:
               only: develop
           requires:
             - build
-          # Compare files on develop
+          # Compare files on main
           base-revision: main
           # Config for continuation; herein we reuse this config itself
           config-path: .circleci/config.yml
