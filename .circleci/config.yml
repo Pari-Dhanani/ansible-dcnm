@@ -210,7 +210,7 @@ jobs:
             git add galaxy.yml
             git status
             echo "======="
-            git commit -m "Released new version: $COLLECTION_VERSION"
+            git commit -m "Released new version: $COLLECTION_VERSION [skip ci]"
             git status
             git push origin develop
             echo "Pushing $COLLECTION_VERSION"
