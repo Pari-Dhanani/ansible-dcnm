@@ -1,9 +1,9 @@
-version: "3.3.10"
-release_title: "Ansible ndfc 3.3.10"
+version: "3.3.18"
+release_title: "Ansible ndfc 3.3.18"
 release_desc: "Cisco Ansible DCNM Collection"
 changes: 
   added:
-    - "Support to configure multiple interfaces for vrf_lite on a vrf"
+    - "Support to configure 18 multiple interfaces for vrf_lite on a vrf"
     - "Added support for more switch roles in inventory module."
     - "Change 3"
   
@@ -12,4 +12,3 @@ changes:
     - "https://github.com/CiscoDevNet/ansible-dcnm/issues/205"
     - "https://github.com/CiscoDevNet/ansible-dcnm/issues/206"
     - "Removed the restriction on netcommon version supported by DCNM collection. The restriction was introduced as fix for CiscoDevNet#209. Netcommon versions >=2.6.1 is supported."
-
