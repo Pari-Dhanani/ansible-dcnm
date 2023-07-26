@@ -63,7 +63,7 @@ You can also include it in a `requirements.yml` file and install it with `ansibl
 ---
 collections:
   - name: cisco.dcnm
-    version: 3.30.40
+    version: 3.30.49
 ```
 ## Using this collection
 
