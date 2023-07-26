@@ -1,7 +1,5 @@
 #!/usr/bin/python
-#
 # Copyright (c) 2020-2023 Cisco and/or its affiliates.
-#
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -2453,7 +2451,12 @@ class DcnmNetwork:
 
         if state == "query":
 
-            if self.dcnm_version > 11:
+            # If ingress replication is enabled multicast group address should be set to "" as default.
+            # If ingress replication is not enabled, the default value for multicast group address
+            # is different for DCNM and NDFC.
+            if self.fabric_det.get("replicationMode") == "Ingress":
+                mcast_group_addr = ""
+            elif self.dcnm_version > 11:
                 mcast_group_addr = "239.1.1.1"
             else:
                 mcast_group_addr = "239.1.1.0"
@@ -2533,8 +2536,12 @@ class DcnmNetwork:
 
         else:
 
-            # The default value for multicast group address is different for DCNM and NDFC.
-            if self.dcnm_version > 11:
+            # If ingress replication is enabled multicast group address should be set to "" as default.
+            # If ingress replication is not enabled, the default value for multicast group address
+            # is different for DCNM and NDFC.
+            if self.fabric_det.get("replicationMode") == "Ingress":
+                mcast_group_addr = ""
+            elif self.dcnm_version > 11:
                 mcast_group_addr = "239.1.1.1"
             else:
                 mcast_group_addr = "239.1.1.0"
