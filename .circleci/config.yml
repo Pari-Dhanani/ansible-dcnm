@@ -204,8 +204,7 @@ jobs:
       - run:
           name: Create new branch and raise PR against main
           command: |
-            source temp.txt
-            git checkout -b $COLLECTION_VERSION
+            source /tmp/collectversion.txt
             git add CHANGELOG.md
             git add README.md
             git add galaxy.yml
@@ -213,13 +212,15 @@ jobs:
             echo "======="
             git commit -m "Released new version: $COLLECTION_VERSION"
             git status
+            git push origin develop
             echo "Pushing $COLLECTION_VERSION"
+            git checkout -b $COLLECTION_VERSION
             git push origin $COLLECTION_VERSION
             gh pr create --base main --head $COLLECTION_VERSION --title "Release $COLLECTION_VERSION" --body "Release $COLLECTION_VERSION"
 
   tag-release:
 
-    working_directory: ~/repo
+    working_directory: ~/release
     machine: true
     resource_class: cisco/ansible-dcnm
     steps:
@@ -233,7 +234,8 @@ jobs:
           name: Create Tag and Release on gh and then publish to ansible-galaxy
           command: |
           
-            source temp.txt
+            source /tmp/collectversion.txt
+
             git checkout main
             git tag -a $COLLECTION_VERSION -m "Ansible NDFC Collection Version $COLLECTION_VERSION"
             git push origin --tags
@@ -242,7 +244,7 @@ jobs:
             mkdir ./tmp/
             ansible-galaxy collection install cisco-dcnm-$COLLECTION_VERSION.tar.gz -p ./tmp/
             # ansible-galaxy collection publish ./cisco-dcnm-3.3.1.tar.gz --api-key=
-            rm temp.txt
+           
 
 
 workflows:
@@ -265,9 +267,9 @@ workflows:
                 - 2.13.6     
 
       - path-filtering/filter:
-          filters:
-            branches:
-              ignore: develop
+          #filters:
+          #  branches:
+          #    ignore: develop
           requires:
             - build
           # Compare files on develop
@@ -326,7 +328,7 @@ workflows:
               only: develop
           requires:
             - build
-          # Compare files on main
+          # Compare files on develop
           base-revision: main
           # Config for continuation; herein we reuse this config itself
           config-path: .circleci/config.yml
@@ -334,7 +336,6 @@ workflows:
           mapping: |
             .* run-setup false
             releaseinfo.yaml run-prep-release true
-
 
   vrf:
     when:
